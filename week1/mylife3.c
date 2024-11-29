@@ -91,14 +91,48 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
         if (strcmp(buf, "#Life 1.06\n"))
         {
             // RLE形式
-            int pos = 0;
-            int x, y;
-            char s[200];
+            int x = 0, y = 0;
             while (NULL != fgets(buf, 1000, fp))
             {
-                printf("%s", buf);
-                if (2 == sscanf(buf, "%s", &s))
-                    break;
+                int num, buf_pos;
+                char c;
+                char *p = buf;
+                while (*p != '\n' && *p != '#' && *p != 'x')
+                {
+                    if (2 == sscanf(p, "%d%c%n", &num, &c, &buf_pos))
+                    {
+                        printf("num = %d, c = %c, pos = %d\n", num, c, buf_pos);
+                        if (c == 'o')
+                        {
+                            for (int i = 0; i < num; ++i)
+                            {
+                                cell[y][x + i] = 1;
+                                printf("2cell[%d][%d] = 1\n", y, x + i);
+                            }
+                        }
+                        x += num;
+                    }
+                    else if (1 == sscanf(p, "%c%n", &c, &buf_pos))
+                    {
+                        printf("num = 1, c = %c, pos = %d\n", c, buf_pos);
+                        if (c == '$')
+                        {
+                            x = 0;
+                            ++y;
+                        }
+                        else if (c == '!')
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            cell[y][x] = c == 'o' ? 1 : 0;
+                            printf("1cell[%d][%d] = 1\n", y, x);
+                            ++x;
+                        }
+                    }
+                    p += buf_pos;
+                }
             }
         }
         else
@@ -111,6 +145,7 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
                 cell[y][x] = 1;
             }
         }
+        dump_cells(0, height, width, cell);
     }
 }
 
