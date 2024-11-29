@@ -79,9 +79,8 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
         srand((unsigned int)time(NULL));
         for (int i = 0; i < num_lives; ++i)
         {
-            int h = rand() % (height - 1);
-            int w = rand() % (width - 1);
-            printf("%d %d", h, w);
+            int h = rand() % height;
+            int w = rand() % width;
             cell[h][w] = 1;
         }
     }
