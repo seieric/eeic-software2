@@ -177,22 +177,14 @@ int get_cell_value(int h, int w, const int height, const int width, int cell[hei
 int my_count_adjacent_cells(int h, int w, const int height, const int width, int cell[height][width])
 {
     int count = 0;
-    if (get_cell_value(h - 1, w - 1, height, width, cell))
-        ++count;
-    if (get_cell_value(h - 1, w + 1, height, width, cell))
-        ++count;
-    if (get_cell_value(h - 1, w, height, width, cell))
-        ++count;
-    if (get_cell_value(h, w - 1, height, width, cell))
-        ++count;
-    if (get_cell_value(h, w + 1, height, width, cell))
-        ++count;
-    if (get_cell_value(h + 1, w - 1, height, width, cell))
-        ++count;
-    if (get_cell_value(h + 1, w, height, width, cell))
-        ++count;
-    if (get_cell_value(h + 1, w + 1, height, width, cell))
-        ++count;
+    count += get_cell_value(h - 1, w - 1, height, width, cell);
+    count += get_cell_value(h - 1, w + 1, height, width, cell);
+    count += get_cell_value(h - 1, w, height, width, cell);
+    count += get_cell_value(h, w - 1, height, width, cell);
+    count += get_cell_value(h, w + 1, height, width, cell);
+    count += get_cell_value(h + 1, w - 1, height, width, cell);
+    count += get_cell_value(h + 1, w, height, width, cell);
+    count += get_cell_value(h + 1, w + 1, height, width, cell);
     return count;
 }
 
