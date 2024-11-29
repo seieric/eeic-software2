@@ -1,0 +1,5 @@
+{
+  "C_Cpp.default.cppStandard": "c++98",
+  "C_Cpp.clang_format_fallbackStyle": "Visual Studio",
+  "editor.defaultFormatter": "ms-vscode.cpptools"
+}
