@@ -9,6 +9,8 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
 void my_print_cells(FILE *fp, int gen, const int height, const int width, int cell[height][width]);
 void my_update_cells(const int height, const int width, int cell[height][width]);
 int my_count_adjacent_cells(int h, int w, const int height, const int width, int cell[height][width]);
+int get_cell_value(int h, int w, const int height, const int width, int cell[height][width]);
+float get_live_rate(const int height, const int width, int cell[height][width]);
 void dump_cells(int gen, const int height, const int width, int cell[height][width]);
 
 int main(int argc, char **argv)
@@ -71,6 +73,9 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
+/*
+    セルを初期化する
+*/
 void my_init_cells(const int height, const int width, int cell[height][width], FILE *fp)
 {
     if (fp == NULL)
@@ -145,20 +150,9 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
     }
 }
 
-float get_live_rate(const int height, const int width, int cell[height][width])
-{
-    int count = 0;
-    for (int h = 0; h < height; ++h)
-    {
-        for (int w = 0; w < width; ++w)
-        {
-            if (cell[h][w])
-                ++count;
-        }
-    }
-    return count * 1.0 / (height * width);
-}
-
+/*
+    セルの状態を表示する
+*/
 void my_print_cells(FILE *fp, int gen, const int height, const int width, int cell[height][width])
 {
     printf("generation = %d, live rate = %f\n", gen, get_live_rate(height, width, cell));
@@ -193,29 +187,8 @@ void my_print_cells(FILE *fp, int gen, const int height, const int width, int ce
 }
 
 /*
-    セル配列から範囲外アクセスに対して安全に値を取得する
+    セルの状態を更新する
 */
-int get_cell_value(int h, int w, const int height, const int width, int cell[height][width])
-{
-    if (h < 0 || height <= h || w < 0 || width <= w)
-        return 0;
-    return cell[h][w];
-}
-
-int my_count_adjacent_cells(int h, int w, const int height, const int width, int cell[height][width])
-{
-    int count = 0;
-    count += get_cell_value(h - 1, w - 1, height, width, cell);
-    count += get_cell_value(h - 1, w + 1, height, width, cell);
-    count += get_cell_value(h - 1, w, height, width, cell);
-    count += get_cell_value(h, w - 1, height, width, cell);
-    count += get_cell_value(h, w + 1, height, width, cell);
-    count += get_cell_value(h + 1, w - 1, height, width, cell);
-    count += get_cell_value(h + 1, w, height, width, cell);
-    count += get_cell_value(h + 1, w + 1, height, width, cell);
-    return count;
-}
-
 void my_update_cells(const int height, const int width, int cell[height][width])
 {
     int tmp_cell[NUM_CELLS] = {0};
@@ -247,6 +220,50 @@ void my_update_cells(const int height, const int width, int cell[height][width])
             cell[h][w] = tmp_cell[width * h + w];
         }
     }
+}
+
+/*
+    指定したセルの周囲の生存セル数を数える
+*/
+int my_count_adjacent_cells(int h, int w, const int height, const int width, int cell[height][width])
+{
+    int count = 0;
+    count += get_cell_value(h - 1, w - 1, height, width, cell);
+    count += get_cell_value(h - 1, w + 1, height, width, cell);
+    count += get_cell_value(h - 1, w, height, width, cell);
+    count += get_cell_value(h, w - 1, height, width, cell);
+    count += get_cell_value(h, w + 1, height, width, cell);
+    count += get_cell_value(h + 1, w - 1, height, width, cell);
+    count += get_cell_value(h + 1, w, height, width, cell);
+    count += get_cell_value(h + 1, w + 1, height, width, cell);
+    return count;
+}
+
+/*
+    セル配列から範囲外アクセスに対して安全に値を取得する
+*/
+int get_cell_value(int h, int w, const int height, const int width, int cell[height][width])
+{
+    if (h < 0 || height <= h || w < 0 || width <= w)
+        return 0;
+    return cell[h][w];
+}
+
+/*
+    セルの生存率を計算する
+*/
+float get_live_rate(const int height, const int width, int cell[height][width])
+{
+    int count = 0;
+    for (int h = 0; h < height; ++h)
+    {
+        for (int w = 0; w < width; ++w)
+        {
+            if (cell[h][w])
+                ++count;
+        }
+    }
+    return count * 1.0 / (height * width);
 }
 
 /*
