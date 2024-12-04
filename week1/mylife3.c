@@ -12,6 +12,7 @@ int my_count_adjacent_cells(int h, int w, const int height, const int width, int
 int get_cell_value(int h, int w, const int height, const int width, int cell[height][width]);
 float get_live_rate(const int height, const int width, int cell[height][width]);
 void dump_cells(int gen, const int height, const int width, int cell[height][width]);
+int apply_rle_data(int *x, int *y, int num, char c, const int height, const int width, int cell[height][width]);
 
 int main(int argc, char **argv)
 {
@@ -105,33 +106,15 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
                 char *p = buf;
                 while (*p != '\n' && *p != '#' && *p != 'x')
                 {
-                    if (2 == sscanf(p, "%d%c%n", &num, &c, &buf_pos))
+                    if (sscanf(p, "%d%c%n", &num, &c, &buf_pos) == 2)
                     {
-                        if (c == 'o')
-                        {
-                            for (int i = 0; i < num; ++i)
-                            {
-                                cell[y][x + i] = 1;
-                            }
-                        }
-                        x += num;
-                    }
-                    else if (1 == sscanf(p, "%c%n", &c, &buf_pos))
-                    {
-                        if (c == '$')
-                        {
-                            x = 0;
-                            ++y;
-                        }
-                        else if (c == '!')
-                        {
+                        if (apply_rle_data(&x, &y, num, c, height, width, cell))
                             break;
-                        }
-                        else
-                        {
-                            cell[y][x] = c == 'o' ? 1 : 0;
-                            ++x;
-                        }
+                    }
+                    else if (sscanf(p, "%c%n", &c, &buf_pos) == 1)
+                    {
+                        if (apply_rle_data(&x, &y, 1, c, height, width, cell))
+                            break;
                     }
                     p += buf_pos;
                 }
@@ -292,4 +275,34 @@ void dump_cells(int gen, const int height, const int width, int cell[height][wid
         }
     }
     fclose(fp);
+}
+
+/*
+    RLE形式のデータを適用する
+    終了記号!が見つかった場合は1を返し、それ以外は0を返す
+*/
+int apply_rle_data(int *x, int *y, int num, char c, const int height, const int width, int cell[height][width])
+{
+    for (int i = 0; i < num; ++i)
+    {
+        switch (c)
+        {
+        case '!': // 終了
+            return 1;
+        case '$': // 改行
+            *x = 0;
+            ++*y;
+            break;
+        case 'o': // live
+            cell[*y][*x + i] = 1;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (c != '$')
+        *x += num;
+
+    return 0;
 }
