@@ -149,7 +149,7 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
     }
 }
 
-int count_live_cells(const int height, const int width, int cell[height][width])
+float get_live_rate(const int height, const int width, int cell[height][width])
 {
     int count = 0;
     for (int h = 0; h < height; ++h)
@@ -160,13 +160,12 @@ int count_live_cells(const int height, const int width, int cell[height][width])
                 ++count;
         }
     }
-    return count;
+    return count * 1.0 / (height * width);
 }
 
 void my_print_cells(FILE *fp, int gen, const int height, const int width, int cell[height][width])
 {
-    int count = count_live_cells(height, width, cell);
-    printf("generation = %d, live rate = %f\n", gen, count * 1.0 / (height * width));
+    printf("generation = %d, live rate = %f\n", gen, get_live_rate(height, width, cell));
     printf("+");
     for (int w = 0; w < width; ++w)
     {
