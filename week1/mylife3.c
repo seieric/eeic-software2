@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         my_print_cells(fp, gen, height, width, cell); // 表示する
         sleep(1);                                     // 1秒休止する
         fprintf(fp, "\e[%dA", height + 3);            // height+3 の分、カーソルを上に戻す(壁2、表示部1)
-        if (gen % 10 == 0 && gen < 10000)
+        if (gen < 10000 && gen % 10 == 0)
         {
             dump_cells(gen, height, width, cell);
         }
