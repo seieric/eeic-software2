@@ -94,27 +94,24 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
             int x = 0, y = 0;
             while (NULL != fgets(buf, 1000, fp))
             {
-                int num, buf_pos;
+                int num, buf_pos = 0;
                 char c;
                 char *p = buf;
                 while (*p != '\n' && *p != '#' && *p != 'x')
                 {
                     if (2 == sscanf(p, "%d%c%n", &num, &c, &buf_pos))
                     {
-                        printf("num = %d, c = %c, pos = %d\n", num, c, buf_pos);
                         if (c == 'o')
                         {
                             for (int i = 0; i < num; ++i)
                             {
                                 cell[y][x + i] = 1;
-                                printf("2cell[%d][%d] = 1\n", y, x + i);
                             }
                         }
                         x += num;
                     }
                     else if (1 == sscanf(p, "%c%n", &c, &buf_pos))
                     {
-                        printf("num = 1, c = %c, pos = %d\n", c, buf_pos);
                         if (c == '$')
                         {
                             x = 0;
@@ -127,7 +124,6 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
                         else
                         {
                             cell[y][x] = c == 'o' ? 1 : 0;
-                            printf("1cell[%d][%d] = 1\n", y, x);
                             ++x;
                         }
                     }
@@ -145,7 +141,6 @@ void my_init_cells(const int height, const int width, int cell[height][width], F
                 cell[y][x] = 1;
             }
         }
-        dump_cells(0, height, width, cell);
     }
 }
 
@@ -201,9 +196,7 @@ void my_print_cells(FILE *fp, int gen, const int height, const int width, int ce
 */
 int get_cell_value(int h, int w, const int height, const int width, int cell[height][width])
 {
-    if (h < 0 || height <= h)
-        return 0;
-    if (w < 0 || width <= w)
+    if (h < 0 || height <= h || w < 0 || width <= w)
         return 0;
     return cell[h][w];
 }
