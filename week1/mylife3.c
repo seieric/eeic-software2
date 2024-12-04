@@ -3,6 +3,7 @@
 #include <unistd.h> // sleep()関数を使う
 #include <string.h>
 #include <time.h>
+#define NUM_CELLS 2800
 
 void my_init_cells(const int height, const int width, int cell[height][width], FILE *fp);
 void my_print_cells(FILE *fp, int gen, const int height, const int width, int cell[height][width]);
@@ -217,7 +218,7 @@ int my_count_adjacent_cells(int h, int w, const int height, const int width, int
 
 void my_update_cells(const int height, const int width, int cell[height][width])
 {
-    int tmp_cell[100000] = {0};
+    int tmp_cell[NUM_CELLS] = {0};
 
     for (int h = 0; h < height; ++h)
     {
