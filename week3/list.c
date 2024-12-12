@@ -12,32 +12,40 @@ struct node {
   Node *next;
 };
 
-Node *push_front(Node *begin, const char *str) {
+typedef struct list {
+  Node *begin;
+} List;
+
+List *push_front(List *list, const char *str) {
   Node *p = (Node *)malloc(sizeof(Node));
   char *s = (char *)malloc(strlen(str) + 1);
   strcpy(s, str);
 
-  *p = (Node){.str = s, .next = begin};
+  *p = (Node){.str = s, .next = list->begin};
 
-  return p;
+  list->begin = p;
+
+  return list;
 }
 
-Node *pop_front(Node *begin) {
-  assert(begin != NULL);
-  Node *p = begin->next;
+List *pop_front(List *list) {
+  assert(list->begin != NULL);
+  Node *p = list->begin->next;
 
-  free(begin->str);
-  free(begin);
+  free(list->begin->str);
+  free(list->begin);
 
-  return p;
+  list->begin = p;
+
+  return list;
 }
 
-Node *push_back(Node *begin, const char *str) {
-  if (begin == NULL) {
-    return push_front(begin, str);
+List *push_back(List *list, const char *str) {
+  if (list->begin == NULL) {
+    return push_front(list, str);
   }
 
-  Node *p = begin;
+  Node *p = list->begin;
   while (p->next != NULL) {
     p = p->next;
   }
@@ -49,13 +57,14 @@ Node *push_back(Node *begin, const char *str) {
   *q = (Node){.str = s, .next = NULL};
   p->next = q;
 
-  return begin;
+  return list;
 }
 
 // Let's try: pop_back の実装
-Node *pop_back(Node *begin) {
-  assert(begin != NULL);
+List *pop_back(List *list) {
+  assert(list->begin != NULL);
 
+  Node *begin = list->begin;
   Node *node = begin;
   Node *prev = NULL;
   while (node->next != NULL) {
@@ -64,7 +73,7 @@ Node *pop_back(Node *begin) {
   }
 
   if (node == begin) {
-    begin = NULL;
+    list->begin = NULL;
   } else {
     prev->next = NULL;
   }
@@ -72,7 +81,7 @@ Node *pop_back(Node *begin) {
   free(node->str);
   free(node);
 
-  return begin;
+  return list;
 }
 
 Node *insert(Node *p, const char *str) {
@@ -88,31 +97,33 @@ Node *insert(Node *p, const char *str) {
   return new;
 }
 
-Node *remove_all(Node *begin) {
-  while ((begin = pop_front(
-              begin)));  // Repeat pop_front() until the list becomes empty
-  return begin;
+List *remove_all(List *list) {
+  while ((list = pop_front(
+              list)));  // Repeat pop_front() until the list becomes empty
+  list->begin = NULL;
+  return list;
 }
 
 int main() {
-  Node *begin = NULL;
+  List _list = {.begin = NULL};
+  List *list = &_list;
 
   char buf[maxlen];
   while (fgets(buf, maxlen, stdin)) {
-    begin = push_front(begin, buf);
+    list = push_front(list, buf);
     if (strcmp("Otsuka\n", buf) == 0) {
-      insert(begin, "Sugamo\n");
+      insert(list->begin, "Sugamo\n");
     }
     // begin = push_back(begin, buf); // Try this instead of push_front()
   }
 
   // begin = pop_front(begin);  // What will happen if you do this?
-  begin = pop_back(begin);   // What will happen if you do this?
-  begin = push_back(begin, "Takanawagateway\n");
+  list = pop_back(list);  // What will happen if you do this?
+  list = push_back(list, "Takanawagateway\n");
 
   // begin = remove_all(begin); // What will happen if you do this?
 
-  for (const Node *p = begin; p != NULL; p = p->next) {
+  for (const Node *p = list->begin; p != NULL; p = p->next) {
     printf("%s", p->str);
   }
 
