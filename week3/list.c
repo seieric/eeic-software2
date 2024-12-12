@@ -75,6 +75,19 @@ Node *pop_back(Node *begin) {
   return begin;
 }
 
+Node *insert(Node *p, const char *str) {
+  if (p == NULL) return p;
+
+  Node *new = (Node *)malloc(sizeof(Node));
+  char *s = (char *)malloc(strlen(str) + 1);
+  strcpy(s, str);
+
+  *new = (Node){.next = p->next, .str = s};
+  p->next = new;
+
+  return new;
+}
+
 Node *remove_all(Node *begin) {
   while ((begin = pop_front(
               begin)));  // Repeat pop_front() until the list becomes empty
@@ -87,11 +100,15 @@ int main() {
   char buf[maxlen];
   while (fgets(buf, maxlen, stdin)) {
     begin = push_front(begin, buf);
+    if (strcmp("Otsuka\n", buf) == 0) {
+      insert(begin, "Sugamo\n");
+    }
     // begin = push_back(begin, buf); // Try this instead of push_front()
   }
 
   // begin = pop_front(begin);  // What will happen if you do this?
   begin = pop_back(begin);   // What will happen if you do this?
+  begin = push_back(begin, "Takanawagateway\n");
 
   // begin = remove_all(begin); // What will happen if you do this?
 
