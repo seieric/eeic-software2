@@ -16,7 +16,14 @@ int main(int argc, char **argv) {
 
     // 3回投げる
     for (int i = 1; i <= 3; i++) {
-        Point p = my_iso_gauss_rand((Point){.x = 0, .y = 0}, 15.0);
+        char type = '_';
+        int area = 0;
+        printf("Input target: ");
+        scanf("%c%d", &type, &area);
+        getchar();  // 改行をバッファから削除
+
+        Point target = my_calculate_target(type, area);
+        Point p = my_iso_gauss_rand(target, 15.0);
 
         my_plot_throw(&board, p, i);
         my_print_board(&board);
@@ -108,8 +115,6 @@ void my_init_board(Board *b) {
 }
 
 Point my_iso_gauss_rand(Point mu, double stddev) {
-    srand((unsigned int)time(NULL));
-
     double u1 = rand() * 1.0 / RAND_MAX;
     double u2 = rand() * 1.0 / RAND_MAX;
     double x = sqrt(-2 * log(u1)) * cos(2 * PI * u1) * stddev + mu.x;
@@ -203,3 +208,82 @@ int my_calculate_score(Board *b, Point p) {
 }
 
 void my_print_score(Board *b) { printf("Score: %d", b->score); }
+
+Point my_calculate_target(char type, int area) {
+    double r = my_parse_type(type);
+    double theta = my_parse_area(area);
+
+    return (Point){.x = r * cos(theta), .y = r * sin(theta)};
+}
+
+double my_parse_type(char type) {
+    switch (type) {
+        case 'T':
+            return 12;
+        case 'S':
+            // シングル
+            double p = rand() * 1.0 / RAND_MAX;
+            if (p > 0.5) {
+                // 内シングル
+                return 7;
+            } else {
+                // 外シングル
+                return 15.5;
+            }
+        case 'D':
+            // ダブル
+            return 19;
+        case 'B':
+        default:
+            // ブル
+            return 0;
+    }
+}
+
+double my_parse_area(int area) {
+    switch (area) {
+        case 6:
+            return 0;
+        case 10:
+            return PI * 0.5 / 5 * 1;
+        case 15:
+            return PI * 0.5 / 5 * 2;
+        case 2:
+            return PI * 0.5 / 5 * 3;
+        case 17:
+            return PI * 0.5 / 5 * 4;
+        case 3:
+            return PI * 0.5;
+        case 19:
+            return PI * 0.5 / 5 * 6;
+        case 7:
+            return PI * 0.5 / 5 * 7;
+        case 16:
+            return PI * 0.5 / 5 * 8;
+        case 8:
+            return PI * 0.5 / 5 * 9;
+        case 11:
+            return PI;
+        case 14:
+            return PI * 0.5 / 5 * 11;
+        case 9:
+            return PI * 0.5 / 5 * 12;
+        case 12:
+            return PI * 0.5 / 5 * 13;
+        case 5:
+            return PI * 0.5 / 5 * 14;
+        case 20:
+            return PI * 1.5;
+        case 1:
+            return PI * 0.5 / 5 * 16;
+        case 18:
+            return PI * 0.5 / 5 * 17;
+        case 4:
+            return PI * 0.5 / 5 * 18;
+        case 13:
+            return PI * 0.5 / 5 * 19;
+        default:
+            // 不正な値の場合はランダムな角度を返す
+            return rand() * 1.0 / RAND_MAX * 2 * PI;
+    }
+}

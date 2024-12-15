@@ -48,3 +48,7 @@ void my_print_point(Point p);
 int my_calculate_score(Board *b, Point p);
 
 void my_print_score(Board *b);
+
+Point my_calculate_target(char type, int area);
+double my_parse_type(char type);
+double my_parse_area(int area);
