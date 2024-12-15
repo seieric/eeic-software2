@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #define RADIUS 20
+#define PI 3.14159265358979323846
 
 // 座標を表す. [-20,20] が描画範囲
 typedef struct point{
@@ -36,12 +37,15 @@ size_t my_get_board_width(Board *b);
 
 // i回目 (1-3) が盤面内なら数字でプロット
 void plot_throw(Board *b, Point p, int i);
+void my_plot_throw(Board *b, Point p, int i);
 
 // 座標が描画領域ならtrueを返す
 bool is_in_board(Board *b, Point p);
+bool my_is_in_board(Board *b, Point p);
 
 // 座標が有効（得点圏内）ならtrueを返す
 bool is_valid_point(Board *b, Point p);
+bool my_is_valid_point(Board *b, Point p);
 
 // 分散が等方向一定の正規分布の乱数を生成する
 Point iso_gauss_rand(Point mu, double stddev);
