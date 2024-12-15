@@ -1,11 +1,11 @@
+#include "my_darts1.h"
+
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "darts.h"
 
 int main(int argc, char **argv) {
     Board board;
@@ -53,6 +53,9 @@ void my_plot_throw(Board *b, Point p, int i) {
         int w = round(2 * (p.x + 20));
         b->space[h][w] = i + '0';
     }
+
+    // スコアを計算し、反映する
+    b->score += my_calculate_score(b, p);
 }
 
 bool my_is_in_board(Board *b, Point p) {
@@ -78,6 +81,8 @@ bool my_is_valid_point(Board *b, Point p) {
 }
 
 void my_init_board(Board *b) {
+    b->score = 0;
+
     int height = my_get_board_height(b);
     int width = my_get_board_width(b);
     for (int i = 0; i < height; ++i) {
@@ -92,7 +97,8 @@ void my_init_board(Board *b) {
     for (int i = 0; i < height; ++i) {
         int w_center = (width - 2) / 2;
         int h_center = height / 2;
-        double dx = w_center * sqrt((1 - pow((i - h_center) * 1.0 / h_center, 2)));
+        double dx =
+            w_center * sqrt((1 - pow((i - h_center) * 1.0 / h_center, 2)));
         int x1 = w_center - dx;
         int x2 = w_center + dx;
         b->space[i][x1] = '+';
@@ -110,4 +116,87 @@ Point my_iso_gauss_rand(Point mu, double stddev) {
     return (Point){.x = x, .y = y};
 }
 
-void my_print_point(Point p) { printf("(%f %f)", p.y, p.x); }
+void my_print_point(Point p) { printf("(%f %f)", p.x, p.y); }
+
+int my_calculate_score(Board *b, Point p) {
+    // 範囲外のときは0点
+    if (!my_is_valid_point(b, p)) return 0;
+
+    double r = sqrt(pow(p.x, 2) + pow(p.y, 2));
+    int times = 0;
+    if (r <= 1) {
+        // インブル
+        return 50;
+    } else if (r <= 3) {
+        // アウターブル
+        return 25;
+    } else if (r <= 11) {
+        // 内シングル
+        times = 1;
+    } else if (r <= 13) {
+        // トリプル
+        times = 3;
+    } else if (r <= 18) {
+        // 外シングル
+        times = 1;
+    } else if (r <= 20) {
+        // ダブル
+        times = 2;
+    }
+
+    double theta = atan(p.y / p.x);
+    int base_score = 0;
+    if (p.x >= 0) {
+        // 右側にあるとき
+        if (theta <= -1 * PI * 0.5 / 10) {
+            base_score = 20;
+        } else if (theta <= -1 * PI * 0.5 / 10 * 3) {
+            base_score = 1;
+        } else if (theta <= -1 * PI * 0.5 / 10 * 5) {
+            base_score = 18;
+        } else if (theta <= -1 * PI * 0.5 / 10 * 7) {
+            base_score = 4;
+        } else if (theta <= -1 * PI * 0.5 / 10 * 9) {
+            base_score = 13;
+        } else if (theta <= PI * 0.5 / 10) {
+            base_score = 6;
+        } else if (theta <= PI * 0.5 / 10 * 3) {
+            base_score = 10;
+        } else if (theta <= PI * 0.5 / 10 * 5) {
+            base_score = 15;
+        } else if (theta <= PI * 0.5 / 10 * 7) {
+            base_score = 2;
+        } else if (theta <= PI * 0.5 / 10 * 9) {
+            base_score = 17;
+        } else {
+            base_score = 3;
+        }
+    } else {
+        // 左側にあるとき
+        if (theta < -1 * PI * 0.5 / 10) {
+            base_score = 3;
+        } else if (theta < -1 * PI * 0.5 / 10 * 3) {
+            base_score = 19;
+        } else if (theta < -1 * PI * 0.5 / 10 * 5) {
+            base_score = 7;
+        } else if (theta < -1 * PI * 0.5 / 10 * 7) {
+            base_score = 16;
+        } else if (theta < -1 * PI * 0.5 / 10 * 9) {
+            base_score = 8;
+        } else if (theta < PI * 0.5 / 10) {
+            base_score = 11;
+        } else if (theta < PI * 0.5 / 10 * 3) {
+            base_score = 14;
+        } else if (theta < PI * 0.5 / 10 * 5) {
+            base_score = 9;
+        } else if (theta < PI * 0.5 / 10 * 7) {
+            base_score = 12;
+        } else if (theta < PI * 0.5 / 10 * 9) {
+            base_score = 5;
+        } else {
+            base_score = 20;
+        }
+    }
+
+    return base_score * times;
+}
