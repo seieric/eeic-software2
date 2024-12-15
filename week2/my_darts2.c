@@ -12,6 +12,20 @@ int main(int argc, char **argv) {
 
     srand((unsigned int)time(NULL));
 
+    double stddev = 15.0;
+
+    int c;
+    opterr = 0; // エラーを表示しない
+    while ((c = getopt(argc, argv, "v:")) != -1) {
+        if (c == 'v') {
+            stddev = atof(optarg);
+        } else if (c == '?') {
+            printf("Unknown argument: %c\n", optopt);
+            return 1;
+        }
+    }
+    printf("stddev: %f\n", stddev);
+
     my_init_board(&board);
 
     // 3回投げる
@@ -19,11 +33,14 @@ int main(int argc, char **argv) {
         char type = '_';
         int area = 0;
         printf("Input target: ");
-        scanf("%c%d", &type, &area);
+        scanf("%c", &type);
+        if (type != 'B') {
+            scanf("%d", &area);
+        }
         getchar();  // 改行をバッファから削除
 
         Point target = my_calculate_target(type, area);
-        Point p = my_iso_gauss_rand(target, 15.0);
+        Point p = my_iso_gauss_rand(target, stddev);
 
         my_plot_throw(&board, p, i);
         my_print_board(&board);
