@@ -100,8 +100,6 @@ void my_init_board(Board *b) {
 }
 
 Point my_iso_gauss_rand(Point mu, double stddev) {
-    srand((unsigned int)time(NULL));
-
     double u1 = rand() * 1.0 / RAND_MAX;
     double u2 = rand() * 1.0 / RAND_MAX;
     double x = sqrt(-2 * log(u1)) * cos(2 * PI * u1) * stddev + mu.x;
