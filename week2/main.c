@@ -88,7 +88,6 @@ void my_init_board(Board *b) {
         b->space[i][width - 1] = '\0';
     }
 
-    printf("%d %d", width, height);
     for (int i = 0; i < height; ++i) {
         int w_center = (width - 2) / 2;
         int h_center = height / 2;
