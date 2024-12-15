@@ -21,6 +21,8 @@ int main(int argc, char **argv) {
         my_plot_throw(&board, p, i);
         my_print_board(&board);
         printf("-------\n");
+        my_print_score(&board);
+        printf(" ");
         my_print_point(p);
         if (!my_is_valid_point(&board, p)) printf(" miss!");
         printf("\n");
@@ -93,7 +95,6 @@ void my_init_board(Board *b) {
         b->space[i][width - 1] = '\0';
     }
 
-    printf("%d %d", width, height);
     for (int i = 0; i < height; ++i) {
         int w_center = (width - 2) / 2;
         int h_center = height / 2;
@@ -200,3 +201,5 @@ int my_calculate_score(Board *b, Point p) {
 
     return base_score * times;
 }
+
+void my_print_score(Board *b) { printf("Score: %d", b->score); }

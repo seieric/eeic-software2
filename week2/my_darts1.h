@@ -55,3 +55,5 @@ void print_point(Point p);
 void my_print_point(Point p);
 
 int my_calculate_score(Board *b, Point p);
+
+void my_print_score(Board *b);
