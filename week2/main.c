@@ -92,9 +92,9 @@ void my_init_board(Board *b) {
     for (int i = 0; i < height; ++i) {
         int w_center = (width - 2) / 2;
         int h_center = height / 2;
-        int dx = w_center * sqrt((1 - pow((i - h_center) * 1.0 / h_center, 2)));
-        int x1 = round(w_center - dx);
-        int x2 = round(w_center + dx);
+        double dx = w_center * sqrt((1 - pow((i - h_center) * 1.0 / h_center, 2)));
+        int x1 = w_center - dx;
+        int x2 = w_center + dx;
         b->space[i][x1] = '+';
         b->space[i][x2] = '+';
     }
