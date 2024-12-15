@@ -110,4 +110,4 @@ Point my_iso_gauss_rand(Point mu, double stddev) {
     return (Point){.x = x, .y = y};
 }
 
-void my_print_point(Point p) { printf("(%f %f)", p.y, p.x); }
+void my_print_point(Point p) { printf("(%f %f)", p.x, p.y); }
