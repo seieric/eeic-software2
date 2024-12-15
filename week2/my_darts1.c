@@ -70,15 +70,9 @@ bool my_is_in_board(Board *b, Point p) {
 }
 
 bool my_is_valid_point(Board *b, Point p) {
-    if (!my_is_in_board(b, p)) return false;
+    if (sqrt(pow(p.x, 2) + pow(p.y, 2)) <= RADIUS)
+        return true;
 
-    int h = round(p.y + 20);
-    int w = round(2 * (p.x + 20));
-    int count = 0;
-    for (int i = 0; i <= w; ++i) {
-        if (b->space[h][i] == '+') ++count;
-    }
-    if (count == 1) return true;
     return false;
 }
 
