@@ -44,6 +44,7 @@ typedef enum res {
     EXIT,
     LINE,
     RECT,
+    CIRCLE,
     UNDO,
     SAVE,
     UNKNOWN,
@@ -58,5 +59,6 @@ void draw_line(Canvas *c, const int x0, const int y0, const int x1,
                const int y1);
 void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
                const int rect_height);
+void draw_circle(Canvas *c, const int x0, const int y0, const int r);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);

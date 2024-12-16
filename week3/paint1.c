@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <errno.h>  // for error catch
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -174,6 +175,24 @@ void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
     }
 }
 
+void draw_circle(Canvas *c, const int x0, const int y0, const int r) {
+    const int width = c->width;
+    const int height = c->height;
+    const char pen = c->pen;
+    for (int i = 0; i <= 2 * r; ++i) {
+        for (int j = 0; j <= 2 * r; ++j) {
+            const int y = y0 - r + i;
+            const double dx = sqrt(r * r - (i - r) * (i - r));
+            const int x1 = x0 - dx;
+            const int x2 = x0 + dx;
+            if (y >= 0 && y < height) {
+                if (x1 >= 0 && x1 < width) c->canvas[x1][y] = pen;
+                if (x2 >= 0 && x2 < width) c->canvas[x2][y] = pen;
+            }
+        }
+    }
+}
+
 void save_history(const char *filename, History *his) {
     const char *default_history_file = "history.txt";
     if (filename == NULL) filename = default_history_file;
@@ -247,6 +266,28 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return RECT;
     }
 
+    if (strcmp(s, "circle") == 0) {
+        int p[3] = {0};  // p[0]: x0, p[1]: y0, p[2]: r
+        char *b[3];
+        for (int i = 0; i < 3; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        draw_circle(c, p[0], p[1], p[2]);
+        return CIRCLE;
+    }
+
     if (strcmp(s, "save") == 0) {
         s = strtok(NULL, " ");
         save_history(s, his);
@@ -281,6 +322,8 @@ char *strresult(Result res) {
             return "1 line drawn";
         case RECT:
             return "1 rect drawn";
+        case CIRCLE:
+            return "1 circle drawn";
         case UNDO:
             return "undo!";
         case UNKNOWN:
