@@ -8,12 +8,19 @@ typedef struct {
     char pen;
 } Canvas;
 
-// Structure for history (2-D array)
-typedef struct {
-    size_t max_history;
+// 最大履歴と現在位置の情報は持たない
+typedef struct command Command;
+struct command{
+    char *str;
     size_t bufsize;
-    size_t hsize;
-    char **commands;
+    Command *next;
+};
+
+// コマンドリストの先頭へのポインタをメンバに持つ構造体としてHistoryを考える。
+// 履歴がない時点ではbegin = NULL となる。
+typedef struct{
+    Command *begin;
+    size_t bufsize;
 } History;
 
 // functions for Canvas type
