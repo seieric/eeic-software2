@@ -43,6 +43,7 @@ void clear_screen(void);
 typedef enum res {
     EXIT,
     LINE,
+    RECT,
     UNDO,
     SAVE,
     UNKNOWN,
@@ -55,5 +56,7 @@ char *strresult(Result res);
 int max(const int a, const int b);
 void draw_line(Canvas *c, const int x0, const int y0, const int x1,
                const int y1);
+void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+               const int rect_height);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);

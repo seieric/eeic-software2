@@ -1,6 +1,6 @@
 // コマンドラインペイントプログラム
 
-#include "paint.h"
+#include "paint1.h"
 
 #include <ctype.h>
 #include <errno.h>  // for error catch
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE) {
+        if (r == LINE || r == RECT) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -150,6 +150,30 @@ void draw_line(Canvas *c, const int x0, const int y0, const int x1,
     }
 }
 
+void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+               const int rect_height) {
+    const int width = c->width;
+    const int height = c->height;
+    char pen = c->pen;
+
+    for (int i = 0; i < rect_height; ++i) {
+        const int y = y0 + i;
+        if (i == 0 || i == rect_height - 1) {
+            for (int j = 0; j < rect_width; ++j) {
+                const int x = x0 + j;
+                if ((x >= 0) && (x < width) && (y >= 0) && (y < height))
+                    c->canvas[x][y] = pen;
+            }
+        } else {
+            if ((x0 >= 0) && (x0 < width) && (y >= 0) && (y < height))
+                c->canvas[x0][y] = pen;
+            const int x1 = x0 + rect_width - 1;
+            if ((x1 >= 0) && (x1 < width) && (y >= 0) && (y < height))
+                c->canvas[x1][y] = pen;
+        }
+    }
+}
+
 void save_history(const char *filename, History *his) {
     const char *default_history_file = "history.txt";
     if (filename == NULL) filename = default_history_file;
@@ -201,6 +225,28 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return LINE;
     }
 
+    if (strcmp(s, "rect") == 0) {
+        int p[4] = {0};  // p[0]: x0, p[1]: y0, p[2]: x1, p[3]: x1
+        char *b[4];
+        for (int i = 0; i < 4; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        draw_rect(c, p[0], p[1], p[2], p[3]);
+        return LINE;
+    }
+
     if (strcmp(s, "save") == 0) {
         s = strtok(NULL, " ");
         save_history(s, his);
@@ -233,6 +279,8 @@ char *strresult(Result res) {
             return "history saved";
         case LINE:
             return "1 line drawn";
+        case RECT:
+            return "1 rect drawn";
         case UNDO:
             return "undo!";
         case UNKNOWN:
