@@ -244,7 +244,7 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         }
 
         draw_rect(c, p[0], p[1], p[2], p[3]);
-        return LINE;
+        return RECT;
     }
 
     if (strcmp(s, "save") == 0) {
