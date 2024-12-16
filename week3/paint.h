@@ -1,18 +1,19 @@
 #include <stdlib.h>
+
 // Structure for canvas
 typedef struct {
-  int width;
-  int height;
-  char **canvas;
-  char pen;
+    int width;
+    int height;
+    char **canvas;
+    char pen;
 } Canvas;
 
 // Structure for history (2-D array)
 typedef struct {
-  size_t max_history;
-  size_t bufsize;
-  size_t hsize;
-  char **commands;
+    size_t max_history;
+    size_t bufsize;
+    size_t hsize;
+    char **commands;
 } History;
 
 // functions for Canvas type
@@ -29,13 +30,13 @@ void clear_screen(void);
 // enum for interpret_command results
 // interpret_command の結果をより詳細に分割
 typedef enum res {
-  EXIT,
-  LINE,
-  UNDO,
-  SAVE,
-  UNKNOWN,
-  ERRNONINT,
-  ERRLACKARGS
+    EXIT,
+    LINE,
+    UNDO,
+    SAVE,
+    UNKNOWN,
+    ERRNONINT,
+    ERRLACKARGS
 } Result;
 // Result 型に応じて出力するメッセージを返す
 char *strresult(Result res);
