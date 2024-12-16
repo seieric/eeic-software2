@@ -10,7 +10,7 @@ typedef struct {
 
 // 最大履歴と現在位置の情報は持たない
 typedef struct command Command;
-struct command{
+struct command {
     char *str;
     size_t bufsize;
     Command *next;
@@ -18,10 +18,14 @@ struct command{
 
 // コマンドリストの先頭へのポインタをメンバに持つ構造体としてHistoryを考える。
 // 履歴がない時点ではbegin = NULL となる。
-typedef struct{
+typedef struct {
     Command *begin;
     size_t bufsize;
 } History;
+
+void his_push_back(History *his, const char *str);
+void his_pop_back(History *his);
+size_t his_size(History *his);
 
 // functions for Canvas type
 Canvas *init_canvas(int width, int height, char pen);

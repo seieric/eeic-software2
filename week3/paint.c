@@ -4,21 +4,15 @@
 
 #include <ctype.h>
 #include <errno.h>  // for error catch
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char **argv) {
     // for history recording
-    const int max_history = 5;
     const int bufsize = 1000;
-    History his =
-        (History){.max_history = max_history, .bufsize = bufsize, .hsize = 0};
-
-    his.commands = (char **)malloc(his.max_history * sizeof(char *));
-    char *tmp = (char *)malloc(his.max_history * his.bufsize * sizeof(char));
-    for (int i = 0; i < his.max_history; i++)
-        his.commands[i] = tmp + (i * his.bufsize);
+    History his = (History){.begin = NULL, .bufsize = bufsize};
 
     int width;
     int height;
@@ -48,8 +42,8 @@ int main(int argc, char **argv) {
 
     printf("\n");  // required especially for windows env
 
-    while (his.hsize < his.max_history) {
-        size_t hsize = his.hsize;
+    while (true) {
+        size_t hsize = his_size(&his);
         size_t bufsize = his.bufsize;
         print_canvas(c);
         printf("%zu > ", hsize);
@@ -64,8 +58,7 @@ int main(int argc, char **argv) {
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
         if (r == LINE) {
-            strcpy(his.commands[his.hsize], buf);
-            his.hsize++;
+            his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
         clear_command();            // command itself
@@ -167,8 +160,10 @@ void save_history(const char *filename, History *his) {
         return;
     }
 
-    for (int i = 0; i < his->hsize; i++) {
-        fprintf(fp, "%s", his->commands[i]);
+    Command *com = his->begin;
+    while (com) {
+        fprintf(fp, "%s", com->str);
+        com = com->next;
     }
 
     fclose(fp);
@@ -214,11 +209,11 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
 
     if (strcmp(s, "undo") == 0) {
         reset_canvas(c);
-        if (his->hsize != 0) {
-            for (int i = 0; i < his->hsize - 1; i++) {
-                interpret_command(his->commands[i], his, c);
-            }
-            his->hsize--;
+        his_pop_back(his);
+        Command *com = his->begin;
+        while (com) {
+            interpret_command(com->str, his, c);
+            com = com->next;
         }
         return UNDO;
     }
@@ -248,4 +243,50 @@ char *strresult(Result res) {
             return "Too few arguments";
     }
     return NULL;
+}
+
+void his_push_back(History *his, const char *command) {
+    Command *new = (Command *)malloc(sizeof(Command));
+    char *s = (char *)malloc(strlen(command) + 1);
+    strcpy(s, command);
+    *new = (Command){.str = s, .next = NULL, .bufsize = strlen(command)};
+
+    Command *com = his->begin;
+    if (com) {
+        while (com->next) {
+            com = com->next;
+        }
+        com->next = new;
+    } else {
+        his->begin = new;
+    }
+}
+
+void his_pop_back(History *his) {
+    Command *com = his->begin;
+    Command *prev = NULL;
+    printf("t");
+    if (com) {
+        while (com->next) {
+            prev = com;
+            com = com->next;
+        }
+        if (com == his->begin) {
+            his->begin = NULL;
+        } else {
+            prev->next = NULL;
+        }
+        free(com->str);
+        free(com);
+    }
+}
+
+size_t his_size(History *his) {
+    size_t size = 0;
+    Command *com = his->begin;
+    while (com) {
+        com = com->next;
+        ++size;
+    }
+    return size;
 }
