@@ -88,11 +88,12 @@ int main(int argc, char **argv) {
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
                 my_print_score(num_rounds, num_players, player, scores);
-                sleep(2);
+                sleep(1);
             }
             printf("The end of turn.\n");
         }
     }
+    printf("Game ended.\n");
     return 0;
 }
 
