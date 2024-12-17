@@ -88,13 +88,15 @@ void my_print_board(Board *b) {
             if (b->space[i][j] == '+') {
                 // ボードの縁のとき
                 plus_count++;
-                printf("+");
+                printf("\e[48;5;130m \e[0m");
                 continue;
             }
 
             if (b->space[i][j] != ' ') {
+                // +でもなく空白でもないとき
                 printf("\e[48;5;220m%c\e[0m", b->space[i][j]);
             } else if (plus_count == 1 && i != 0 && i != height - 1) {
+                // 空白で的の範囲内のとき
                 Point p = {.x = j / 2.0 - 20, .y = i - 20};
                 double r = sqrt(pow(p.x, 2) + pow(p.y, 2));
                 bool is_single = false;
@@ -119,7 +121,7 @@ void my_print_board(Board *b) {
                     // ダブル（赤or青）
                     is_single = false;
                 } else {
-                    printf("+");
+                    printf(" ");
                     continue;
                 }
 
@@ -163,6 +165,7 @@ void my_print_board(Board *b) {
                     }
                 }
             } else {
+                // 空白で的の範囲外のとき
                 printf("%c", b->space[i][j]);
             }
         }
