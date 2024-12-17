@@ -245,20 +245,22 @@ void my_print_score(int num_rounds, int player, int scores[MAX_PLAYERS][MAX_ROUN
     for (int r = 1; r <= num_rounds; ++r) {
         printf("  %02d  |", r);
     }
-    printf("\n");
+    printf("total|\n");
 
     printf("|");
     for (int r = 0; r <= num_rounds; ++r) {
         printf("------|");
     }
-    printf("\n");
+    printf("-----|\n");
 
     for (int i = 0; i < 4; ++i) {
+        int sum = 0;
         printf("|  %02d  |", i);
         for (int r = 1; r <= num_rounds; ++r) {
             printf("%6d|", scores[i][r]);
+            sum += scores[i][r];
         }
-        printf("\n");
+        printf("%5d|\n", sum);
     }
 }
 
