@@ -5,7 +5,7 @@
 #define RADIUS 20
 #define PI 3.14159265358979323846
 #define MAX_PLAYERS 4
-#define MAX_ROUNDS 25
+#define MAX_ROUNDS 15
 
 // 座標を表す. [-20,20] が描画範囲
 typedef struct point {

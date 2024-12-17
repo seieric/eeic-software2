@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv) {
     Board board;
-    int scores[MAX_PLAYERS][MAX_ROUNDS] = {0};
+    int scores[MAX_PLAYERS][MAX_ROUNDS] = {};
 
     srand((unsigned int)time(NULL));
 
@@ -22,24 +22,33 @@ int main(int argc, char **argv) {
     while ((c = getopt(argc, argv, "v:n:r:h")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
+            if (stddev < 0) {
+                printf("Error: Standard deviation must be positive value or 0.\n");
+                printf("Try '%s -h' for more information.\n", argv[0]);
+                return 1;
+            }
         } else if (c == 'n') {
             num_players = atoi(optarg);
             if (num_players < 1 || MAX_PLAYERS < num_players) {
-                printf("Number of players must be between 1 and %d.\n",
+                printf("Error: Number of players must be between 1 and %d.\n",
                        MAX_PLAYERS);
+                printf("Try '%s -h' for more information.\n", argv[0]);
                 return 1;
             }
         } else if (c == 'r') {
             num_rounds = atoi(optarg);
             if (num_rounds < 1 || MAX_ROUNDS < num_rounds) {
-                printf("Number of rounds must be between 1 and %d.\n",
+                printf("Error: Number of rounds must be between 1 and %d.\n",
                        MAX_ROUNDS);
+                printf("Try '%s -h' for more information.\n", argv[0]);
                 return 1;
             }
         } else if (c == 'h') {
             printf("Usage:\n");
-            printf(" -n <number of players> specify number of players (1-4)\n");
-            printf(" -r <number of rounds>  specify number of rounds (1-25)\n");
+            printf(" -n <number of players> specify number of players (1-%d)\n",
+                   MAX_PLAYERS);
+            printf(" -r <number of rounds>  specify number of rounds (1-%d)\n",
+                   MAX_ROUNDS);
             printf(" -v <stddev>            specify standard deviation\n");
             printf(" -h                     show this help\n");
             return 0;
