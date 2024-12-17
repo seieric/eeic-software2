@@ -101,11 +101,11 @@ void my_print_board(Board *b) {
                 bool is_single = false;
                 if (r <= 1) {
                     // インブル（黒色）
-                    printf("#");
+                    printf("\e[48;5;232m#\e[0m");  // 黒色
                     continue;
                 } else if (r <= 3) {
                     // 外ブル（赤）
-                    printf("\e[31m#\e[0m");
+                    printf("\e[31;48;5;232m#\e[0m");  // 赤色
                     continue;
                 } else if (r <= 11) {
                     // 内シングル（白or黒）
