@@ -9,48 +9,62 @@
 
 int main(int argc, char **argv) {
     Board board;
+    int scores[4] = {0};
 
     srand((unsigned int)time(NULL));
 
     double stddev = 15.0;
+    int num_players = 1;
 
     int c;
-    opterr = 0; // エラーを表示しない
-    while ((c = getopt(argc, argv, "v:")) != -1) {
+    opterr = 0;  // エラーを表示しない
+    while ((c = getopt(argc, argv, "v:n:")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
+        } else if (c == 'n') {
+            num_players = atoi(optarg);
+            if (num_players < 1 || 4 < num_players) {
+                printf("Number of players must be between 1 and 4.\n");
+                return 1;
+            }
         } else if (c == '?') {
             printf("Unknown argument: %c\n", optopt);
             return 1;
         }
     }
     printf("stddev: %f\n", stddev);
+    printf("Number of players: %d\n", num_players);
 
-    my_init_board(&board);
+    // ラウンド数ループ
+    for (int i = 1; i <= 1; ++i) {
+        // プレイヤー数ループ
+        for (int player = 0; player < num_players; ++player) {
+            my_init_board(&board);
+            // 3回投げる
+            for (int k = 1; k <= 3; ++k) {
+                char type = '_';
+                int area = 0;
+                printf("[Player %d] Input target: ", player);
+                scanf("%c", &type);
+                if (type != 'B') {
+                    scanf("%d", &area);
+                }
+                getchar();  // 改行をバッファから削除
 
-    // 3回投げる
-    for (int i = 1; i <= 3; i++) {
-        char type = '_';
-        int area = 0;
-        printf("Input target: ");
-        scanf("%c", &type);
-        if (type != 'B') {
-            scanf("%d", &area);
+                Point target = my_calculate_target(type, area);
+                Point p = my_iso_gauss_rand(target, stddev);
+
+                my_plot_throw(&board, p, k, player, scores);
+                my_print_board(&board);
+                printf("-------\n");
+                my_print_score(player, scores);
+                printf(" ");
+                my_print_point(p);
+                if (!my_is_valid_point(&board, p)) printf(" miss!");
+                printf("\n");
+                sleep(1);
+            }
         }
-        getchar();  // 改行をバッファから削除
-
-        Point target = my_calculate_target(type, area);
-        Point p = my_iso_gauss_rand(target, stddev);
-
-        my_plot_throw(&board, p, i);
-        my_print_board(&board);
-        printf("-------\n");
-        my_print_score(&board);
-        printf(" ");
-        my_print_point(p);
-        if (!my_is_valid_point(&board, p)) printf(" miss!");
-        printf("\n");
-        sleep(1);
     }
     return 0;
 }
@@ -73,7 +87,7 @@ size_t my_get_board_width(Board *b) {
     return sizeof(b->space[0]) / sizeof(char);
 }
 
-void my_plot_throw(Board *b, Point p, int i) {
+void my_plot_throw(Board *b, Point p, int i, int player, int scores[MAX_PLAYERS]) {
     if (my_is_in_board(b, p)) {
         int h = round(p.y + 20);
         int w = round(2 * (p.x + 20));
@@ -81,7 +95,7 @@ void my_plot_throw(Board *b, Point p, int i) {
     }
 
     // スコアを計算し、反映する
-    b->score += my_calculate_score(b, p);
+    scores[player] += my_calculate_score(b, p);
 }
 
 bool my_is_in_board(Board *b, Point p) {
@@ -94,15 +108,12 @@ bool my_is_in_board(Board *b, Point p) {
 }
 
 bool my_is_valid_point(Board *b, Point p) {
-    if (sqrt(pow(p.x, 2) + pow(p.y, 2)) <= RADIUS)
-        return true;
+    if (sqrt(pow(p.x, 2) + pow(p.y, 2)) <= RADIUS) return true;
 
     return false;
 }
 
 void my_init_board(Board *b) {
-    b->score = 0;
-
     int height = my_get_board_height(b);
     int width = my_get_board_width(b);
     for (int i = 0; i < height; ++i) {
@@ -218,7 +229,12 @@ int my_calculate_score(Board *b, Point p) {
     return base_score * times;
 }
 
-void my_print_score(Board *b) { printf("Score: %d", b->score); }
+void my_print_score(int player, int scores[MAX_PLAYERS]) {
+    printf("|player|score|\n");
+    for (int i = 0; i < 4; ++i) {
+        printf("|  %02d  |%5d|\n", i + 1, scores[i]);
+    }
+}
 
 Point my_calculate_target(char type, int area) {
     double r = my_parse_type(type);
