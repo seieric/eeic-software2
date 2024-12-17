@@ -84,8 +84,85 @@ void my_print_board(Board *b) {
     int height = my_get_board_height(b);
     int width = my_get_board_width(b);
     for (int i = 0; i < height; ++i) {
+        int plus_count = 0;
         for (int j = 0; j < width; ++j) {
-            printf("%c", b->space[i][j]);
+            if (b->space[i][j] == '+') {
+                plus_count++;
+            }
+
+            if (b->space[i][j] != ' ') {
+                printf("%c", b->space[i][j]);
+            } else if (plus_count == 1 && i != 0 && i != height - 1) {
+                Point p = {.x = j / 2.0 - 20, .y = i - 20};
+                double r = sqrt(pow(p.x, 2) + pow(p.y, 2));
+                bool is_single = false;
+                if (r <= 1) {
+                    // インブル（黒色）
+                    printf("#");
+                    continue;
+                } else if (r <= 3) {
+                    // 外ブル（赤）
+                    printf("\e[31m#\e[0m");
+                    continue;
+                } else if (r <= 11) {
+                    // 内シングル（白or黒）
+                    is_single = true;
+                } else if (r <= 13) {
+                    // トリプル（赤or青）
+                    is_single = false;
+                } else if (r <= 18) {
+                    // 外シングル（白or黒）
+                    is_single = true;
+                } else if (r <= 20) {
+                    // ダブル（赤or青）
+                    is_single = false;
+                } else {
+                    printf("+");
+                    continue;
+                }
+
+                double theta = atan(p.y / p.x);
+                bool is_large = true;
+                if (theta <= -1 * PI * 0.5 / 10 * 9) {
+                    is_large = true;
+                } else if (theta <= -1 * PI * 0.5 / 10 * 7) {
+                    is_large = false;
+                } else if (theta <= -1 * PI * 0.5 / 10 * 5) {
+                    is_large = true;
+                } else if (theta <= -1 * PI * 0.5 / 10 * 3) {
+                    is_large = false;
+                } else if (theta <= -1 * PI * 0.5 / 10) {
+                    is_large = true;
+                } else if (theta <= PI * 0.5 / 10) {
+                    is_large = false;
+                } else if (theta <= PI * 0.5 / 10 * 3) {
+                    is_large = true;
+                } else if (theta <= PI * 0.5 / 10 * 5) {
+                    is_large = false;
+                } else if (theta <= PI * 0.5 / 10 * 7) {
+                    is_large = true;
+                } else if (theta <= PI * 0.5 / 10 * 9) {
+                    is_large = false;
+                }
+
+                if (is_single) {
+                    // シングルの場合
+                    if (is_large) {
+                        printf("\e[48;5;232m#\e[0m");  // 黒色
+                    } else {
+                        printf("\e[48;5;231m#\e[0m");  // 白色
+                    }
+                } else {
+                    // ダブル・トリプルの場合
+                    if (is_large) {
+                        printf("\e[31;48;5;232m#\e[0m");  // 赤色
+                    } else {
+                        printf("\e[34;48;5;232m#\e[0m");  // 青色
+                    }
+                }
+            } else {
+                printf("%c", b->space[i][j]);
+            }
         }
     }
 }
