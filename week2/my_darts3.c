@@ -112,21 +112,19 @@ void my_print_board(Board *b) {
     int height = my_get_board_height(b);
     int width = my_get_board_width(b);
     for (int i = 0; i < height; ++i) {
-        int plus_count = 0;
         for (int j = 0; j < width - 2; ++j) {
             if (b->space[i][j] == '+') {
                 // ボードの縁のとき
-                plus_count++;
                 printf("\e[48;5;130m \e[0m");
                 continue;
             }
 
+            Point p = {.x = j / 2.0 - 20, .y = i - 20};
             if (b->space[i][j] != ' ') {
                 // +でもなく空白でもないとき
                 printf("\e[48;5;220m%c\e[0m", b->space[i][j]);
-            } else if (plus_count == 1 && i != 0 && i != height - 1) {
+            } else if (my_is_valid_point(b, p)) {
                 // 空白で的の範囲内のとき
-                Point p = {.x = j / 2.0 - 20, .y = i - 20};
                 double r = sqrt(pow(p.x, 2) + pow(p.y, 2));
                 bool is_single = false;
                 if (r <= 1) {
