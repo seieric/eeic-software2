@@ -85,13 +85,16 @@ void my_print_board(Board *b) {
     int width = my_get_board_width(b);
     for (int i = 0; i < height; ++i) {
         int plus_count = 0;
-        for (int j = 0; j < width; ++j) {
+        for (int j = 0; j < width - 2; ++j) {
             if (b->space[i][j] == '+') {
+                // ボードの縁のとき
                 plus_count++;
+                printf("+");
+                continue;
             }
 
             if (b->space[i][j] != ' ') {
-                printf("%c", b->space[i][j]);
+                printf("\e[48;5;220m%c\e[0m", b->space[i][j]);
             } else if (plus_count == 1 && i != 0 && i != height - 1) {
                 Point p = {.x = j / 2.0 - 20, .y = i - 20};
                 double r = sqrt(pow(p.x, 2) + pow(p.y, 2));
@@ -164,6 +167,7 @@ void my_print_board(Board *b) {
                 printf("%c", b->space[i][j]);
             }
         }
+        printf("%c%c", b->space[i][width - 2], b->space[i][width - 1]);
     }
 }
 
