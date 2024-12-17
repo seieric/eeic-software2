@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     double stddev = 15.0;
 
     int c;
-    opterr = 0; // エラーを表示しない
+    opterr = 0;  // エラーを表示しない
     while ((c = getopt(argc, argv, "v:")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
@@ -33,11 +33,7 @@ int main(int argc, char **argv) {
         char type = '_';
         int area = 0;
         printf("Input target: ");
-        scanf("%c", &type);
-        if (type != 'B') {
-            scanf("%d", &area);
-        }
-        getchar();  // 改行をバッファから削除
+        scanf("%c%d%*1[\n]", &type, &area);
 
         Point target = my_calculate_target(type, area);
         Point p = my_iso_gauss_rand(target, stddev);
@@ -94,8 +90,7 @@ bool my_is_in_board(Board *b, Point p) {
 }
 
 bool my_is_valid_point(Board *b, Point p) {
-    if (sqrt(pow(p.x, 2) + pow(p.y, 2)) <= RADIUS)
-        return true;
+    if (sqrt(pow(p.x, 2) + pow(p.y, 2)) <= RADIUS) return true;
 
     return false;
 }

@@ -60,11 +60,7 @@ int main(int argc, char **argv) {
                 my_print_score(num_rounds, player, scores);
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
-                scanf("%c", &type);
-                if (type != 'B') {
-                    scanf("%d", &area);
-                }
-                getchar();  // 改行をバッファから削除
+                scanf("%c%d%*1[\n]", &type, &area);
 
                 Point target = my_calculate_target(type, area);
                 Point p = my_iso_gauss_rand(target, stddev);
