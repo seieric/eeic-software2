@@ -2,7 +2,7 @@
 
 ## 実施した内容
 
-以下の基本課題に取り組んだ。発展課題には取り組んでいない。
+以下の基本課題および発展課題に取り組んだ。
 
 - 課題1（`struct_alignment.c`, `struct_alignment.md`）
 - 課題2（`struct_compare/`）
@@ -12,7 +12,22 @@
   - Pointのxy座標は、円の中心を原点とし、x軸方向を水平右方向、y軸方向を垂直下方向とするものとした。
 - 課題4（`my_darts2.c`, `my_darts2.h`）
   - ユーザーの入力を元に、狙うべき位置を計算する`my_calculate_target`関数を実装した。この関数は`my_parse_type`関数と`my_parse_area`関数を用いて極座標系における狙い位置を求めたあと、直交座標系での位置を返却する。
+  - ユーザーの入力が不正な場合は、ランダムな位置を狙うようにした。
   - `getopt`を利用して`-v`オプションで標準偏差を指定できるように実装した。想定されていない引数がある際には、プログラムを終了するようにした。
+
+### 発展課題
+
+`my_darts3.c`, `my_darts3.h`に課題4までダーツゲームに以下の機能を追加したゲームを実装した。
+
+- 現実のダーツ盤のようにダーツ盤に色をつけて表示する。
+  - 領域ごとに色を交互に塗るようにした。
+- 複数人(1人～4人)でのプレイ・複数ラウンド(1～15ラウンド)のプレイ。
+　- プレイヤー数とラウンド数は、コマンドライン引数`-n`と`-r`で指定。不正な値はエラーを表示して終了する。
+- ラウンド別・プレイヤー別のスコア表示。
+  - 合計得点も表示する。
+  - 「カウントアップ」をベースに、得点はシンプルに積算するルールにした。
+- コマンドライン引数`-h`でヘルプを表示。
+- 現実のダーツにあるようなプレイヤー交代時のアクション（`Enter`キーを押して次のプレイヤーに交代）。
 
 ## 参考にしたサイト
 
@@ -22,3 +37,6 @@
 - https://hiroyukichishiro.com/scanf-problems-in-c-language/
 - https://qiita.com/tobira-code/items/24e583c30f07c4853f8f
 - https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html
+- https://www.darts-atlas.com/2020/10/rule/
+- https://nayo-darts.com/countup
+- https://daeudaeu.com/c-printf-color/
