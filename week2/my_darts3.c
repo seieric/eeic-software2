@@ -50,6 +50,8 @@ int main(int argc, char **argv) {
         // プレイヤー数ループ
         for (int player = 0; player < num_players; ++player) {
             my_init_board(&board);
+            printf("Press 'enter' once next player is ready: ");
+            getchar();
             // 3回投げる
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
@@ -75,6 +77,7 @@ int main(int argc, char **argv) {
                 printf("\n");
                 sleep(2);
             }
+            printf("The end of turn.\n");
         }
     }
     return 0;
