@@ -15,10 +15,11 @@ int main(int argc, char **argv) {
 
     double stddev = 15.0;
     int num_players = 1;
+    int num_rounds = 8;
 
     int c;
     opterr = 0;  // エラーを表示しない
-    while ((c = getopt(argc, argv, "v:n:")) != -1) {
+    while ((c = getopt(argc, argv, "v:n:r:")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
         } else if (c == 'n') {
@@ -27,16 +28,23 @@ int main(int argc, char **argv) {
                 printf("Number of players must be between 1 and 4.\n");
                 return 1;
             }
+        } else if (c == 'r') {
+            num_rounds = atoi(optarg);
+            if (num_rounds < 1 || 25 < num_rounds) {
+                printf("Number of rounds must be between 1 and 25.\n");
+                return 1;
+            }
         } else if (c == '?') {
             printf("Unknown argument: %c\n", optopt);
             return 1;
         }
     }
     printf("stddev: %f\n", stddev);
+    printf("Number of rounds: %d\n", num_rounds);
     printf("Number of players: %d\n", num_players);
 
     // ラウンド数ループ
-    for (int i = 1; i <= 1; ++i) {
+    for (int round = 1; round <= num_rounds; ++round) {
         // プレイヤー数ループ
         for (int player = 0; player < num_players; ++player) {
             my_init_board(&board);
@@ -44,7 +52,7 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
-                printf("[Player %d] Input target: ", player);
+                printf("[Round %d][Player %d] Input target: ", round, player);
                 scanf("%c", &type);
                 if (type != 'B') {
                     scanf("%d", &area);
@@ -87,7 +95,8 @@ size_t my_get_board_width(Board *b) {
     return sizeof(b->space[0]) / sizeof(char);
 }
 
-void my_plot_throw(Board *b, Point p, int i, int player, int scores[MAX_PLAYERS]) {
+void my_plot_throw(Board *b, Point p, int i, int player,
+                   int scores[MAX_PLAYERS]) {
     if (my_is_in_board(b, p)) {
         int h = round(p.y + 20);
         int w = round(2 * (p.x + 20));
