@@ -5,6 +5,7 @@
 #define RADIUS 20
 #define PI 3.14159265358979323846
 #define MAX_PLAYERS 4
+#define MAX_ROUNDS 25
 
 // 座標を表す. [-20,20] が描画範囲
 typedef struct point {
@@ -31,7 +32,7 @@ size_t my_get_board_height(Board *b);
 size_t my_get_board_width(Board *b);
 
 // i回目 (1-3) が盤面内なら数字でプロット
-void my_plot_throw(Board *b, Point p, int i, int player, int scores[MAX_PLAYERS]);
+void my_plot_throw(Board *b, Point p, int i, int r, int player, int scores[MAX_PLAYERS][MAX_ROUNDS]);
 
 // 座標が描画領域ならtrueを返す
 bool my_is_in_board(Board *b, Point p);
@@ -47,7 +48,7 @@ void my_print_point(Point p);
 
 int my_calculate_score(Board *b, Point p);
 
-void my_print_score(int player, int scores[MAX_PLAYERS]);
+void my_print_score(int num_rounds, int player, int scores[MAX_PLAYERS][MAX_ROUNDS]);
 
 Point my_calculate_target(char type, int area);
 double my_parse_type(char type);

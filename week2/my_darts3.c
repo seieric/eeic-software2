@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv) {
     Board board;
-    int scores[4] = {0};
+    int scores[MAX_PLAYERS][MAX_ROUNDS] = {0};
 
     srand((unsigned int)time(NULL));
 
@@ -24,14 +24,16 @@ int main(int argc, char **argv) {
             stddev = atof(optarg);
         } else if (c == 'n') {
             num_players = atoi(optarg);
-            if (num_players < 1 || 4 < num_players) {
-                printf("Number of players must be between 1 and 4.\n");
+            if (num_players < 1 || MAX_PLAYERS < num_players) {
+                printf("Number of players must be between 1 and %d.\n",
+                       MAX_PLAYERS);
                 return 1;
             }
         } else if (c == 'r') {
             num_rounds = atoi(optarg);
-            if (num_rounds < 1 || 25 < num_rounds) {
-                printf("Number of rounds must be between 1 and 25.\n");
+            if (num_rounds < 1 || MAX_ROUNDS < num_rounds) {
+                printf("Number of rounds must be between 1 and %d.\n",
+                       MAX_ROUNDS);
                 return 1;
             }
         } else if (c == '?') {
@@ -44,7 +46,7 @@ int main(int argc, char **argv) {
     printf("Number of players: %d\n", num_players);
 
     // ラウンド数ループ
-    for (int round = 1; round <= num_rounds; ++round) {
+    for (int r = 1; r <= num_rounds; ++r) {
         // プレイヤー数ループ
         for (int player = 0; player < num_players; ++player) {
             my_init_board(&board);
@@ -52,7 +54,7 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
-                printf("[Round %d][Player %d] Input target: ", round, player);
+                printf("[Round %d][Player %d] Input target: ", r, player);
                 scanf("%c", &type);
                 if (type != 'B') {
                     scanf("%d", &area);
@@ -62,10 +64,10 @@ int main(int argc, char **argv) {
                 Point target = my_calculate_target(type, area);
                 Point p = my_iso_gauss_rand(target, stddev);
 
-                my_plot_throw(&board, p, k, player, scores);
+                my_plot_throw(&board, p, k, r, player, scores);
                 my_print_board(&board);
                 printf("-------\n");
-                my_print_score(player, scores);
+                my_print_score(num_rounds, player, scores);
                 printf(" ");
                 my_print_point(p);
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
@@ -95,8 +97,8 @@ size_t my_get_board_width(Board *b) {
     return sizeof(b->space[0]) / sizeof(char);
 }
 
-void my_plot_throw(Board *b, Point p, int i, int player,
-                   int scores[MAX_PLAYERS]) {
+void my_plot_throw(Board *b, Point p, int i, int r, int player,
+                   int scores[MAX_PLAYERS][MAX_ROUNDS]) {
     if (my_is_in_board(b, p)) {
         int h = round(p.y + 20);
         int w = round(2 * (p.x + 20));
@@ -104,7 +106,7 @@ void my_plot_throw(Board *b, Point p, int i, int player,
     }
 
     // スコアを計算し、反映する
-    scores[player] += my_calculate_score(b, p);
+    scores[player][r] += my_calculate_score(b, p);
 }
 
 bool my_is_in_board(Board *b, Point p) {
@@ -238,10 +240,25 @@ int my_calculate_score(Board *b, Point p) {
     return base_score * times;
 }
 
-void my_print_score(int player, int scores[MAX_PLAYERS]) {
-    printf("|player|score|\n");
+void my_print_score(int num_rounds, int player, int scores[MAX_PLAYERS][MAX_ROUNDS]) {
+    printf("|player|");
+    for (int r = 1; r <= num_rounds; ++r) {
+        printf("  %02d  |", r);
+    }
+    printf("\n");
+
+    printf("|");
+    for (int r = 0; r <= num_rounds; ++r) {
+        printf("------|");
+    }
+    printf("\n");
+
     for (int i = 0; i < 4; ++i) {
-        printf("|  %02d  |%5d|\n", i + 1, scores[i]);
+        printf("|  %02d  |", i);
+        for (int r = 1; r <= num_rounds; ++r) {
+            printf("%6d|", scores[i][r]);
+        }
+        printf("\n");
     }
 }
 
