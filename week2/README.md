@@ -27,17 +27,27 @@
 - ラウンド別・プレイヤー別のスコア表示。
   - 合計得点も表示する。
   - 「カウントアップ」ゲームをベースに、得点はシンプルに積算するルールにした。
+- プレイヤーの入力タイミングで標準偏差を決定する。
+  - 狙い位置が入力されるまでの時間を計測し、その時間をもとに標準偏差を決定している。
+  - 標準偏差はlogスケールで増加するようにし、時間が経ちすぎたときに大きくなりすぎないようにした。
+  - ただし、`-v`オプションで標準偏差が指定されたときは、指定値を利用する。
 - コマンドライン引数`-h`でヘルプを表示。
 - 現実のダーツにあるようなプレイヤー交代時のアクション（`Enter`キーを押して次のプレイヤーに交代）。
 
 ## 参考にしたサイト
 
+### 実装
+
 - https://marycore.jp/prog/c-lang/convert-number-to-char/
-- https://darts.kit-work.com/rule/count.html
-- https://bar-ryuk.com/archives/802
 - https://hiroyukichishiro.com/scanf-problems-in-c-language/
 - https://qiita.com/tobira-code/items/24e583c30f07c4853f8f
 - https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html
+- https://daeudaeu.com/c-printf-color/
+- https://www.delftstack.com/ja/howto/c/gettimeofday-in-c/
+
+### ダーツのルール等
+
+- https://bar-ryuk.com/archives/802
+- https://darts.kit-work.com/rule/count.html
 - https://www.darts-atlas.com/2020/10/rule/
 - https://nayo-darts.com/countup
-- https://daeudaeu.com/c-printf-color/
