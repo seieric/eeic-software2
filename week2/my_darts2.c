@@ -19,6 +19,10 @@ int main(int argc, char **argv) {
     while ((c = getopt(argc, argv, "v:")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
+            if (stddev < 0) {
+                printf("Error: Standard deviation must be positive value or 0.\n");
+                return 1;
+            }
         } else if (c == '?') {
             printf("Unknown argument: %c\n", optopt);
             return 1;
