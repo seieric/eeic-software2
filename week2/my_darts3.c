@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
                 my_print_point(p);
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
-                sleep(1);
+                sleep(2);
             }
         }
     }
