@@ -54,7 +54,8 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
-                printf("[Round %d][Player %d] Input target: ", r, player);
+                printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
+                       k);
                 scanf("%c", &type);
                 if (type != 'B') {
                     scanf("%d", &area);
@@ -67,11 +68,10 @@ int main(int argc, char **argv) {
                 my_plot_throw(&board, p, k, r, player, scores);
                 my_print_board(&board);
                 printf("-------\n");
-                my_print_score(num_rounds, player, scores);
-                printf(" ");
                 my_print_point(p);
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
+                my_print_score(num_rounds, player, scores);
                 sleep(1);
             }
         }
@@ -240,12 +240,13 @@ int my_calculate_score(Board *b, Point p) {
     return base_score * times;
 }
 
-void my_print_score(int num_rounds, int player, int scores[MAX_PLAYERS][MAX_ROUNDS]) {
-    printf("|player|");
+void my_print_score(int num_rounds, int player,
+                    int scores[MAX_PLAYERS][MAX_ROUNDS]) {
+    printf("|Player|");
     for (int r = 1; r <= num_rounds; ++r) {
         printf("  %02d  |", r);
     }
-    printf("total|\n");
+    printf("Total|\n");
 
     printf("|");
     for (int r = 0; r <= num_rounds; ++r) {
