@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
+                system("clear");
                 my_print_score(num_rounds, player, scores);
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
@@ -73,7 +74,6 @@ int main(int argc, char **argv) {
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
                 sleep(1);
-                system("clear");
             }
         }
     }
