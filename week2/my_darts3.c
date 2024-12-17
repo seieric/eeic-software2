@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
                 char type = '_';
                 int area = 0;
                 system("clear");
-                my_print_score(num_rounds, player, scores);
+                my_print_score(num_rounds, num_players, player, scores);
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
                 scanf("%c%d%*1[\n]", &type, &area);
@@ -321,7 +321,7 @@ int my_calculate_score(Board *b, Point p) {
     return base_score * times;
 }
 
-void my_print_score(int num_rounds, int player,
+void my_print_score(int num_rounds, int num_players, int player,
                     int scores[MAX_PLAYERS][MAX_ROUNDS]) {
     printf("|Player|");
     for (int r = 1; r <= num_rounds; ++r) {
@@ -335,9 +335,15 @@ void my_print_score(int num_rounds, int player,
     }
     printf("-----|\n");
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < num_players; ++i) {
         int sum = 0;
-        printf("|  %02d  |", i);
+
+        if (i == player) {
+            printf("|**%02d**|", i);
+        } else {
+            printf("|  %02d  |", i);
+        }
+
         for (int r = 1; r <= num_rounds; ++r) {
             printf("%6d|", scores[i][r]);
             sum += scores[i][r];
