@@ -165,15 +165,15 @@ int my_calculate_score(Board *b, Point p) {
     int base_score = 0;
     if (p.x >= 0) {
         // 右側にあるとき
-        if (theta <= -1 * PI * 0.5 / 10) {
+        if (theta <= -1 * PI * 0.5 / 10 * 9) {
             base_score = 20;
-        } else if (theta <= -1 * PI * 0.5 / 10 * 3) {
+        } else if (theta <= -1 * PI * 0.5 / 10 * 7) {
             base_score = 1;
         } else if (theta <= -1 * PI * 0.5 / 10 * 5) {
             base_score = 18;
-        } else if (theta <= -1 * PI * 0.5 / 10 * 7) {
+        } else if (theta <= -1 * PI * 0.5 / 10 * 3) {
             base_score = 4;
-        } else if (theta <= -1 * PI * 0.5 / 10 * 9) {
+        } else if (theta <= -1 * PI * 0.5 / 10) {
             base_score = 13;
         } else if (theta <= PI * 0.5 / 10) {
             base_score = 6;
