@@ -23,7 +23,8 @@ int main(int argc, char **argv) {
         if (c == 'v') {
             stddev = atof(optarg);
             if (stddev < 0) {
-                printf("Error: Standard deviation must be positive value or 0.\n");
+                printf(
+                    "Error: Standard deviation must be positive value or 0.\n");
                 printf("Try '%s -h' for more information.\n", argv[0]);
                 return 1;
             }
@@ -73,8 +74,6 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
-                system("clear");
-                my_print_score(num_rounds, num_players, player, scores);
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
                 scanf("%c%d%*1[\n]", &type, &area);
@@ -88,6 +87,7 @@ int main(int argc, char **argv) {
                 my_print_point(p);
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
+                my_print_score(num_rounds, num_players, player, scores);
                 sleep(2);
             }
             printf("The end of turn.\n");
