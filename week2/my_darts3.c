@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     int c;
     opterr = 0;  // エラーを表示しない
-    while ((c = getopt(argc, argv, "v:n:r:")) != -1) {
+    while ((c = getopt(argc, argv, "v:n:r:h")) != -1) {
         if (c == 'v') {
             stddev = atof(optarg);
         } else if (c == 'n') {
@@ -36,8 +36,16 @@ int main(int argc, char **argv) {
                        MAX_ROUNDS);
                 return 1;
             }
+        } else if (c == 'h') {
+            printf("Usage:\n");
+            printf(" -n <number of players> specify number of players (1-4)\n");
+            printf(" -r <number of rounds>  specify number of rounds (1-25)\n");
+            printf(" -v <stddev>            specify standard deviation\n");
+            printf(" -h                     show this help\n");
+            return 0;
         } else if (c == '?') {
-            printf("Unknown argument: %c\n", optopt);
+            printf("Invalid option -- '%c'\n", optopt);
+            printf("Try '%s -h' for more information.\n", argv[0]);
             return 1;
         }
     }
