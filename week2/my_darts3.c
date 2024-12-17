@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -13,7 +14,7 @@ int main(int argc, char **argv) {
 
     srand((unsigned int)time(NULL));
 
-    double stddev = 15.0;
+    double stddev = -1;
     int num_players = 1;
     int num_rounds = 8;
 
@@ -50,7 +51,9 @@ int main(int argc, char **argv) {
                    MAX_PLAYERS);
             printf(" -r <number of rounds>  specify number of rounds (1-%d)\n",
                    MAX_ROUNDS);
-            printf(" -v <stddev>            specify standard deviation\n");
+            printf(
+                " -v <stddev>            disable time-based generation and use "
+                "specified standard deviation\n");
             printf(" -h                     show this help\n");
             return 0;
         } else if (c == '?') {
@@ -59,7 +62,6 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
-    printf("stddev: %f\n", stddev);
     printf("Number of rounds: %d\n", num_rounds);
     printf("Number of players: %d\n", num_players);
 
@@ -74,9 +76,17 @@ int main(int argc, char **argv) {
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
                 int area = 0;
+                struct timeval start_time, end_time;
+                gettimeofday(&start_time, NULL);
+
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
                 scanf("%c%d%*1[\n]", &type, &area);
+
+                gettimeofday(&end_time, NULL);
+                float elapsed_time = my_time_diff(&start_time, &end_time);
+
+                if (stddev < 0) stddev = log2(elapsed_time + 1) * 2;
 
                 Point target = my_calculate_target(type, area);
                 Point p = my_iso_gauss_rand(target, stddev);
@@ -85,6 +95,7 @@ int main(int argc, char **argv) {
                 my_print_board(&board);
                 printf("-------\n");
                 my_print_point(p);
+                printf(" (stddev: %f)", stddev);
                 if (!my_is_valid_point(&board, p)) printf(" miss!");
                 printf("\n");
                 my_print_score(num_rounds, num_players, player, scores);
@@ -450,4 +461,9 @@ double my_parse_area(int area) {
             // 不正な値の場合はランダムな角度を返す
             return rand() * 1.0 / RAND_MAX * 2 * PI;
     }
+}
+
+float my_time_diff(struct timeval *start, struct timeval *end) {
+    return (end->tv_sec - start->tv_sec) +
+           1e-6 * (end->tv_usec - start->tv_usec);
 }

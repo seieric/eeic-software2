@@ -55,3 +55,5 @@ void my_print_score(int num_rounds, int num_players, int player,
 Point my_calculate_target(char type, int area);
 double my_parse_type(char type);
 double my_parse_area(int area);
+
+float my_time_diff(struct timeval *start, struct timeval *end);
