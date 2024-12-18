@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     }
 
     char pen = '*';
-
+    his_push_back(&his, "chpen *\n");
     char buf[his.bufsize];
 
     Canvas *c = init_canvas(width, height, pen);
@@ -315,6 +315,9 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
     if (strcmp(s, "chpen") == 0) {
         char *pen;
         pen = strtok(NULL, " ");
+        if (pen == NULL) {
+            return ERRLACKARGS;
+        }
 
         c->pen = *pen;
         return CHPEN;
