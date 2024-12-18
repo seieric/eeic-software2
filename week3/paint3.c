@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE || r == RECT) {
+        if (r == LINE || r == RECT || r == CHPEN) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -312,6 +312,14 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return CIRCLE;
     }
 
+    if (strcmp(s, "chpen") == 0) {
+        char *pen;
+        pen = strtok(NULL, " ");
+
+        c->pen = *pen;
+        return CHPEN;
+    }
+
     if (strcmp(s, "save") == 0) {
         s = strtok(NULL, " ");
         save_history(s, his);
@@ -348,6 +356,8 @@ char *strresult(Result res) {
             return "1 rect drawn";
         case CIRCLE:
             return "1 circle drawn";
+        case CHPEN:
+            return "pen changed";
         case UNDO:
             return "undo!";
         case UNKNOWN:

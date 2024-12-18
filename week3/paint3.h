@@ -45,6 +45,7 @@ typedef enum res {
     LINE,
     RECT,
     CIRCLE,
+    CHPEN,
     UNDO,
     SAVE,
     UNKNOWN,
