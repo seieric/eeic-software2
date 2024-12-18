@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     srand((unsigned int)time(NULL));
 
     double stddev = -1;
-    int num_players = 1;
+    int num_players = 2;
     int num_rounds = 8;
 
     int c;
