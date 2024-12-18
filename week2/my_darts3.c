@@ -69,9 +69,10 @@ int main(int argc, char **argv) {
     for (int r = 1; r <= num_rounds; ++r) {
         // プレイヤー数ループ
         for (int player = 0; player < num_players; ++player) {
+            char buf[10];
             my_init_board(&board);
-            printf("Press 'enter' once next player is ready: ");
-            getchar();
+            printf("Press 'enter' once player %02d is ready: ", player);
+            fgets(buf, 10, stdin);
             // 3回投げる
             for (int k = 1; k <= 3; ++k) {
                 char type = '_';
@@ -81,7 +82,9 @@ int main(int argc, char **argv) {
 
                 printf("[Round %d][Player %d][%d/3] Input target: ", r, player,
                        k);
-                scanf("%c%d%*1[\n]", &type, &area);
+                
+                fgets(buf, 10, stdin);
+                sscanf(buf, "%c%d", &type, &area);
 
                 gettimeofday(&end_time, NULL);
                 float elapsed_time = my_time_diff(&start_time, &end_time);

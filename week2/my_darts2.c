@@ -34,10 +34,12 @@ int main(int argc, char **argv) {
 
     // 3回投げる
     for (int i = 1; i <= 3; i++) {
+        char buf[10];
         char type = '_';
         int area = 0;
         printf("Input target: ");
-        scanf("%c%d%*1[\n]", &type, &area);
+        fgets(buf, 10, stdin);
+        sscanf(buf, "%c%d", &type, &area);
 
         Point target = my_calculate_target(type, area);
         Point p = my_iso_gauss_rand(target, stddev);
