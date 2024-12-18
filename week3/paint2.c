@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
 
     int width;
     int height;
-    if (argc != 3) {
-        fprintf(stderr, "usage: %s <width> <height>\n", argv[0]);
+    if (argc != 3 && argc != 4) {
+        fprintf(stderr, "usage: %s <width> <height> <history_file>\n", argv[0]);
         return EXIT_FAILURE;
     } else {
         char *e;
@@ -35,11 +35,35 @@ int main(int argc, char **argv) {
         width = (int)w;
         height = (int)h;
     }
+
+    // 履歴を読み込む
+    char file[100] = "history.txt";
+    if (argc == 4) {
+        strcpy(file, argv[3]);
+    }
+
+    FILE *fp;
+    if ((fp = fopen(file, "r")) == NULL) {
+        printf("Error: Unable to open '%s'.\n", file);
+        return EXIT_FAILURE;
+    }
+
     char pen = '*';
 
     char buf[his.bufsize];
 
     Canvas *c = init_canvas(width, height, pen);
+
+    while (fgets(buf, his.bufsize, fp) != NULL) {
+        if (strcmp(buf, "\n") == 0) break;
+        his_push_back(&his, buf);
+    }
+
+    Command *com = his.begin;
+    while (com) {
+        interpret_command(com->str, &his, c);
+        com = com->next;
+    }
 
     printf("\n");  // required especially for windows env
 
