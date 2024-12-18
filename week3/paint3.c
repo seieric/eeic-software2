@@ -331,11 +331,13 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
 
     if (strcmp(s, "undo") == 0) {
         reset_canvas(c);
-        his_pop_back(his);
-        Command *com = his->begin;
-        while (com) {
-            interpret_command(com->str, his, c);
-            com = com->next;
+        if (his_size(his) > 1) {
+            his_pop_back(his);
+            Command *com = his->begin;
+            while (com) {
+                interpret_command(com->str, his, c);
+                com = com->next;
+            }
         }
         return UNDO;
     }
