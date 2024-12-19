@@ -3,3 +3,4 @@ tmp/
 *.a
 *.tar.gz
 *.zip
+*.o
