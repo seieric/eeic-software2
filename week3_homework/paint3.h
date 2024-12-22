@@ -48,6 +48,8 @@ typedef enum res {
     CHPEN,
     UNDO,
     SAVE,
+    LOAD_SUCCESS,
+    LOAD_ERROR,
     UNKNOWN,
     ERRNONINT,
     ERRLACKARGS
