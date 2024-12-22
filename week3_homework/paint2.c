@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
 
     int width;
     int height;
-    if (argc != 3 && argc != 4) {
-        fprintf(stderr, "usage: %s <width> <height> <history_file>\n", argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "usage: %s <width> <height>\n", argv[0]);
         return EXIT_FAILURE;
     } else {
         char *e;
@@ -35,35 +35,11 @@ int main(int argc, char **argv) {
         width = (int)w;
         height = (int)h;
     }
-
-    // 履歴を読み込む
-    char file[100] = "history.txt";
-    if (argc == 4) {
-        strcpy(file, argv[3]);
-    }
-
-    FILE *fp;
-    if ((fp = fopen(file, "r")) == NULL) {
-        printf("Error: Unable to open '%s'.\n", file);
-        return EXIT_FAILURE;
-    }
-
     char pen = '*';
 
     char buf[his.bufsize];
 
     Canvas *c = init_canvas(width, height, pen);
-
-    while (fgets(buf, his.bufsize, fp) != NULL) {
-        if (strcmp(buf, "\n") == 0) break;
-        his_push_back(&his, buf);
-    }
-
-    Command *com = his.begin;
-    while (com) {
-        interpret_command(com->str, &his, c);
-        com = com->next;
-    }
 
     printf("\n");  // required especially for windows env
 
@@ -82,7 +58,7 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE || r == RECT) {
+        if (r == LINE || r == RECT || r == CIRCLE) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -318,6 +294,28 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return SAVE;
     }
 
+    if (strcmp(s, "load") == 0) {
+        s = strtok(NULL, " ");
+
+        char file[1000] = "history.txt";
+        if (s != NULL) strcpy(file, s);
+
+        FILE *fp;
+        if ((fp = fopen(file, "r")) == NULL) return LOAD_ERROR;
+
+        while (fgets(buf, his->bufsize, fp) != NULL) {
+            if (strcmp(buf, "\n") == 0) break;
+            his_push_back(his, buf);
+        }
+
+        Command *com = his->begin;
+        while (com) {
+            interpret_command(com->str, his, c);
+            com = com->next;
+        }
+        return LOAD_SUCCESS;
+    }
+
     if (strcmp(s, "undo") == 0) {
         reset_canvas(c);
         his_pop_back(his);
@@ -350,6 +348,10 @@ char *strresult(Result res) {
             return "1 circle drawn";
         case UNDO:
             return "undo!";
+        case LOAD_SUCCESS:
+            return "successfully loaded history";
+        case LOAD_ERROR:
+            return "error: unable to load history";
         case UNKNOWN:
             return "error: unknown command";
         case ERRNONINT:

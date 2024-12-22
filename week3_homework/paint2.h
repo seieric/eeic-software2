@@ -47,6 +47,8 @@ typedef enum res {
     CIRCLE,
     UNDO,
     SAVE,
+    LOAD_SUCCESS,
+    LOAD_ERROR,
     UNKNOWN,
     ERRNONINT,
     ERRLACKARGS
