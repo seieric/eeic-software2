@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE || r == RECT) {
+        if (r == LINE || r == RECT || r == CIRCLE) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
