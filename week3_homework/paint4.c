@@ -379,7 +379,7 @@ void save_bitmap(const char *filename, Canvas *c) {
     // ヘッダとカラーパレットを書き込む
     fwrite(&file_header, sizeof(BitmapFileHeader), 1, fp);
     fwrite(&info_header, sizeof(BitmapInfoHeader), 1, fp);
-    fwrite(colors, sizeof(colors), 2, fp);
+    fwrite(colors, sizeof(BitmapRGBQUAD), 2, fp);
 
     // 行ごとに画像データを書き込む
     // 左下から右方向に読み込んでいく
