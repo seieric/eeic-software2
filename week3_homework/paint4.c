@@ -58,7 +58,8 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN || r == FILL) {
+        if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN || r == FILL ||
+            r == COPY || r == PASTE) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -77,6 +78,8 @@ Canvas *init_canvas(int width, int height, char pen) {
     new->width = width;
     new->height = height;
     new->canvas = (char **)malloc(width * sizeof(char *));
+    // 初期状態ではクリップボードは空
+    new->clipboard = NULL;
 
     char *tmp = (char *)malloc(width * height * sizeof(char));
     memset(tmp, ' ', width * height * sizeof(char));
@@ -241,6 +244,56 @@ void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
     }
 }
 
+// コピー
+int min(const int a, const int b) { return (a < b) ? a : b; }
+void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+               const int rect_height) {
+    const int width = c->width;
+    const int height = c->height;
+    int real_rect_width = min(rect_width, width - x0);
+    int real_rect_height = min(rect_height, height - y0);
+
+    // クリップボードを作成
+    ClipBoard *cb = (ClipBoard *)malloc(sizeof(ClipBoard));
+    if (c->clipboard) {
+        // 過去のデータを削除
+        free(c->clipboard->canvas[0]);
+        free(c->clipboard->canvas);
+        free(c->clipboard);
+    }
+    c->clipboard = cb;
+
+    cb->height = real_rect_height;
+    cb->width = real_rect_width;
+    cb->canvas = (char **)malloc(real_rect_width * sizeof(char *));
+
+    char *tmp =
+        (char *)malloc(real_rect_width * real_rect_height * sizeof(char));
+    memset(tmp, ' ', real_rect_width * real_rect_height * sizeof(char));
+    for (int i = 0; i < real_rect_width; ++i) {
+        cb->canvas[i] = tmp + i * real_rect_height;
+    }
+
+    for (int i = 0; i < real_rect_width; ++i) {
+        for (int j = 0; j < real_rect_height; ++j) {
+            cb->canvas[i][j] = c->canvas[x0 + i][y0 + j];
+        }
+    }
+}
+
+// ペースト
+void paste_rect(Canvas *c, const int x0, const int y0) {
+    for (int i = 0; i < c->clipboard->width; ++i) {
+        for (int j = 0; j < c->clipboard->height; ++j) {
+            const int x = x0 + i;
+            const int y = y0 + j;
+            if ((0 <= x) && (x < c->width) && (0 <= y) && (y < c->height)) {
+                c->canvas[x][y] = c->clipboard->canvas[i][j];
+            }
+        }
+    }
+}
+
 void save_history(const char *filename, History *his) {
     const char *default_history_file = "history.txt";
     if (filename == NULL) filename = default_history_file;
@@ -373,6 +426,59 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return FILL;
     }
 
+    if (strcmp(s, "copy") == 0) {
+        int p[4] = {
+            0};  // p[0]: x0, p[1]: y0, p[2]: rect_width, p[3]: rect_height
+        char *b[4];
+        for (int i = 0; i < 4; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        if ((p[0] < 0) || (c->width <= p[0]) || (p[1] < 0) ||
+            (c->height <= p[1]))
+            return ERRINVALIDVALUE;
+
+        copy_rect(c, p[0], p[1], p[2], p[3]);
+        return COPY;
+    }
+
+    if (strcmp(s, "paste") == 0) {
+        int p[2] = {0};  // p[0]: x0, p[1]: y0
+        char *b[2];
+        for (int i = 0; i < 2; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 2; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        if ((p[0] < 0) || (c->width <= p[0]) || (p[1] < 0) ||
+            (c->height <= p[1]))
+            return ERRINVALIDVALUE;
+
+        paste_rect(c, p[0], p[1]);
+        return PASTE;
+    }
+
     if (strcmp(s, "save") == 0) {
         s = strtok(NULL, " ");
         save_history(s, his);
@@ -437,6 +543,10 @@ char *strresult(Result res) {
             return "pen changed";
         case FILL:
             return "area filled";
+        case COPY:
+            return "area copied";
+        case PASTE:
+            return "area pasted";
         case UNDO:
             return "undo!";
         case LOAD_SUCCESS:

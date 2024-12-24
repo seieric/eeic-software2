@@ -1,11 +1,19 @@
 #include <stdlib.h>
 
+// コピー・切り取り領域用構造体
+typedef struct {
+    int width;
+    int height;
+    char **canvas;
+} ClipBoard;
+
 // Structure for canvas
 typedef struct {
     int width;
     int height;
     char **canvas;
     char pen;
+    ClipBoard *clipboard; // クリップボード
 } Canvas;
 
 // 最大履歴と現在位置の情報は持たない
@@ -62,6 +70,8 @@ typedef enum res {
     CIRCLE,
     CHPEN,
     FILL,
+    COPY,
+    PASTE,
     UNDO,
     SAVE,
     LOAD_SUCCESS,
@@ -75,6 +85,7 @@ typedef enum res {
 char *strresult(Result res);
 
 int max(const int a, const int b);
+int min(const int a, const int b);
 void draw_line(Canvas *c, const int x0, const int y0, const int x1,
                const int y1);
 void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
@@ -83,5 +94,8 @@ void draw_circle(Canvas *c, const int x0, const int y0, const int r);
 void fill_area(Canvas *c, const int x0, const int y0);
 void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
                PointStack *ps);
+void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+               const int rect_height);
+void paste_rect(Canvas *c, const int x0, const int y0);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);
