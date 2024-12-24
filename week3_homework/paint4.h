@@ -75,6 +75,7 @@ typedef enum res {
     PASTE,
     UNDO,
     SAVE,
+    SAVETXT,
     LOAD_SUCCESS,
     LOAD_ERROR,
     UNKNOWN,
@@ -102,3 +103,4 @@ void cut_rect(Canvas *c, const int x0, const int y0, const int rect_width,
 void paste_rect(Canvas *c, const int x0, const int y0);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);
+void save_text(const char *filename, Canvas *c);

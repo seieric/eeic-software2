@@ -330,6 +330,29 @@ void save_history(const char *filename, History *his) {
     fclose(fp);
 }
 
+// テキストファイルとして保存する
+void save_text(const char *filename, Canvas *c) {
+    const char *default_text_file = "your_paint.txt";
+    if (filename == NULL) filename = default_text_file;
+
+    const int width = c->width;
+    const int height = c->height;
+
+    FILE *fp;
+    if ((fp = fopen(filename, "w")) == NULL) {
+        fprintf(stderr, "error: cannot open %s.\n", filename);
+        return;
+    }
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            fprintf(fp, "%c", c->canvas[x][y]);
+        }
+        fprintf(fp, "\n");
+    }
+    fclose(fp);
+}
+
 Result interpret_command(const char *command, History *his, Canvas *c) {
     char buf[his->bufsize];
     strcpy(buf, command);
@@ -529,6 +552,12 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return SAVE;
     }
 
+    if (strcmp(s, "savetxt") == 0) {
+        s = strtok(NULL, " ");
+        save_text(s, c);
+        return SAVETXT;
+    }
+
     if (strcmp(s, "load") == 0) {
         s = strtok(NULL, " ");
 
@@ -577,6 +606,8 @@ char *strresult(Result res) {
             break;
         case SAVE:
             return "history saved";
+        case SAVETXT:
+            return "paint saved as text";
         case LINE:
             return "1 line drawn";
         case RECT:
