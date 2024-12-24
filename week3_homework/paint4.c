@@ -373,8 +373,8 @@ void save_bitmap(const char *filename, Canvas *c) {
     init_bitmapinfoheader(width, height, &info_header);
 
     BitmapRGBQUAD colors[2];
-    init_bitmaprgbquad(0, 0, 0, &colors[0]);        // black
-    init_bitmaprgbquad(255, 255, 255, &colors[1]);  // white
+    init_bitmaprgbquad(255, 255, 255, &colors[0]);  // white
+    init_bitmaprgbquad(0, 0, 0, &colors[1]);        // black
 
     // ヘッダとカラーパレットを書き込む
     fwrite(&file_header, sizeof(BitmapFileHeader), 1, fp);
@@ -391,7 +391,7 @@ void save_bitmap(const char *filename, Canvas *c) {
         for (int i = 0; i < line_size; ++i) {
             for (int j = 0; j < 8; ++j) {
                 const int x = i * 8 + j;
-                if (x < width && c->canvas[x][y] == ' ') {
+                if (x < width && c->canvas[x][y] != ' ') {
                     buf[i] |= 1 << j;
                 }
             }
