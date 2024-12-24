@@ -71,6 +71,7 @@ typedef enum res {
     CHPEN,
     FILL,
     COPY,
+    CUT,
     PASTE,
     UNDO,
     SAVE,
@@ -96,6 +97,8 @@ void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
                PointStack *ps);
 void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
                const int rect_height);
+void cut_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+               const int rect_height); 
 void paste_rect(Canvas *c, const int x0, const int y0);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);

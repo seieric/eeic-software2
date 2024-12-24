@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
         if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN || r == FILL ||
-            r == COPY || r == PASTE) {
+            r == COPY || r == CUT || r == PASTE) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -279,6 +279,23 @@ void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
             cb->canvas[i][j] = c->canvas[x0 + i][y0 + j];
         }
     }
+    printf("%dx%dTTTTT\n", real_rect_height, real_rect_width);
+}
+
+// カット
+void cut_rect(Canvas *c, const int x0, const int y0, const int rect_width,
+              const int rect_height) {
+    // 領域をコピー
+    copy_rect(c, x0, y0, rect_width, rect_height);
+
+    // 領域を初期化
+    int real_rect_width = min(rect_width, c->width - x0);
+    int real_rect_height = min(rect_height, c->height - y0);
+    for (int i = 0; i < real_rect_width; ++i) {
+        for (int j = 0; j < real_rect_height; ++j) {
+            c->canvas[x0 + i][y0 + j] = ' ';
+        }
+    }
 }
 
 // ペースト
@@ -453,6 +470,33 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return COPY;
     }
 
+    if (strcmp(s, "cut") == 0) {
+        int p[4] = {
+            0};  // p[0]: x0, p[1]: y0, p[2]: rect_width, p[3]: rect_height
+        char *b[4];
+        for (int i = 0; i < 4; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        if ((p[0] < 0) || (c->width <= p[0]) || (p[1] < 0) ||
+            (c->height <= p[1]))
+            return ERRINVALIDVALUE;
+
+        cut_rect(c, p[0], p[1], p[2], p[3]);
+        return CUT;
+    }
+
     if (strcmp(s, "paste") == 0) {
         int p[2] = {0};  // p[0]: x0, p[1]: y0
         char *b[2];
@@ -545,6 +589,8 @@ char *strresult(Result res) {
             return "area filled";
         case COPY:
             return "area copied";
+        case CUT:
+            return "area cut";
         case PASTE:
             return "area pasted";
         case UNDO:
