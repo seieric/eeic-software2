@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
         clear_command();
         printf("%s\n", strresult(r));
         // LINEの場合はHistory構造体に入れる
-        if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN) {
+        if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN || r == FILL) {
             his_push_back(&his, buf);
         }
         rewind_screen(2);           // command results
@@ -193,6 +193,54 @@ void draw_circle(Canvas *c, const int x0, const int y0, const int r) {
     }
 }
 
+void fill_area(Canvas *c, const int x0, const int y0) {
+    // Span fillingによる塗りつぶし
+    char pen = c->canvas[x0][y0];
+
+    // 既に同じ文字であれば塗りつぶさない
+    if (c->pen == c->canvas[x0][y0]) return;
+
+    PointStack ps = (PointStack){.begin = NULL};
+    ps_push_back(&ps, x0, y0);
+
+    Point p;
+    while ((p = ps_pop_back(&ps)).x >= 0) {
+        int x = p.x;
+        int y = p.y;
+        int lx = x;
+        if (0 <= y && y < c->height) {
+            // 左方向
+            while ((0 <= lx - 1) && (c->canvas[lx][y] == pen)) {
+                c->canvas[lx - 1][y] = c->pen;
+                --lx;
+            }
+            // 右方向
+            while ((x < c->width) && (c->canvas[x][y] == pen)) {
+                c->canvas[x][y] = c->pen;
+                ++x;
+            }
+            scan_span(c, pen, lx, x - 1, y + 1, &ps);
+            scan_span(c, pen, lx, x - 1, y - 1, &ps);
+        }
+    }
+}
+
+// Span fillingによる塗りつぶしでspanをスキャンする補助関数
+void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
+               PointStack *ps) {
+    if (0 <= y && y < c->height) {
+        bool span_added = false;
+        for (int x = lx; x <= rx; ++x) {
+            if ((x < 0) || (c->width <= x) || (c->canvas[x][y] != pen)) {
+                span_added = false;
+            } else if (!span_added) {
+                ps_push_back(ps, x, y);
+                span_added = true;
+            }
+        }
+    }
+}
+
 void save_history(const char *filename, History *his) {
     const char *default_history_file = "history.txt";
     if (filename == NULL) filename = default_history_file;
@@ -299,6 +347,32 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return CHPEN;
     }
 
+    if (strcmp(s, "fill") == 0) {
+        int p[2] = {0};  // p[0]: x0, p[1]: y0
+        char *b[2];
+        for (int i = 0; i < 2; i++) {
+            b[i] = strtok(NULL, " ");
+            if (b[i] == NULL) {
+                return ERRLACKARGS;
+            }
+        }
+        for (int i = 0; i < 2; i++) {
+            char *e;
+            long v = strtol(b[i], &e, 10);
+            if (*e != '\0') {
+                return ERRNONINT;
+            }
+            p[i] = (int)v;
+        }
+
+        if ((p[0] < 0) || (c->width <= p[0]) || (p[1] < 0) ||
+            (c->height <= p[1]))
+            return ERRINVALIDVALUE;
+
+        fill_area(c, p[0], p[1]);
+        return FILL;
+    }
+
     if (strcmp(s, "save") == 0) {
         s = strtok(NULL, " ");
         save_history(s, his);
@@ -361,6 +435,8 @@ char *strresult(Result res) {
             return "1 circle drawn";
         case CHPEN:
             return "pen changed";
+        case FILL:
+            return "area filled";
         case UNDO:
             return "undo!";
         case LOAD_SUCCESS:
@@ -373,6 +449,8 @@ char *strresult(Result res) {
             return "Non-int value is included";
         case ERRLACKARGS:
             return "Too few arguments";
+        case ERRINVALIDVALUE:
+            return "Invalid value";
     }
     return NULL;
 }
@@ -418,6 +496,55 @@ size_t his_size(History *his) {
     Command *com = his->begin;
     while (com) {
         com = com->next;
+        ++size;
+    }
+    return size;
+}
+
+// 塗りつぶし用のスタックを操作する関数
+void ps_push_back(PointStack *ps, const int x, const int y) {
+    Point *new = (Point *)malloc(sizeof(Point));
+    *new = (Point){.x = x, .y = y};
+
+    Point *p = ps->begin;
+    if (p) {
+        while (p->next) {
+            p = p->next;
+        }
+        p->next = new;
+    } else {
+        ps->begin = new;
+    }
+}
+
+Point ps_pop_back(PointStack *ps) {
+    Point *p = ps->begin;
+    if (p == NULL) {
+        return (Point){.x = -1, .y = -1};
+    }
+
+    Point *prev = NULL;
+
+    while (p->next) {
+        prev = p;
+        p = p->next;
+    }
+    if (p == ps->begin) {
+        ps->begin = NULL;
+    } else {
+        prev->next = NULL;
+    }
+
+    Point last = *p;
+    free(p);
+    return last;
+}
+
+size_t ps_size(PointStack *ps) {
+    size_t size = 0;
+    Point *p = ps->begin;
+    while (p) {
+        p = p->next;
         ++size;
     }
     return size;

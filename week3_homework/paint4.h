@@ -27,6 +27,21 @@ void his_push_back(History *his, const char *str);
 void his_pop_back(History *his);
 size_t his_size(History *his);
 
+// 塗りつぶし用のスタック
+typedef struct point Point;
+struct point {
+    int x;
+    int y;
+    Point *next;
+};
+typedef struct {
+    Point *begin;
+} PointStack;
+
+void ps_push_back(PointStack *ps, const int x, const int y);
+Point ps_pop_back(PointStack *ps);
+size_t ps_size(PointStack *ps);
+
 // functions for Canvas type
 Canvas *init_canvas(int width, int height, char pen);
 void reset_canvas(Canvas *c);
@@ -46,13 +61,15 @@ typedef enum res {
     RECT,
     CIRCLE,
     CHPEN,
+    FILL,
     UNDO,
     SAVE,
     LOAD_SUCCESS,
     LOAD_ERROR,
     UNKNOWN,
     ERRNONINT,
-    ERRLACKARGS
+    ERRLACKARGS,
+    ERRINVALIDVALUE,
 } Result;
 // Result 型に応じて出力するメッセージを返す
 char *strresult(Result res);
@@ -63,5 +80,8 @@ void draw_line(Canvas *c, const int x0, const int y0, const int x1,
 void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
                const int rect_height);
 void draw_circle(Canvas *c, const int x0, const int y0, const int r);
+void fill_area(Canvas *c, const int x0, const int y0);
+void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
+               PointStack *ps);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);
