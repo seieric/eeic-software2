@@ -386,17 +386,17 @@ void save_bitmap(const char *filename, Canvas *c) {
     // 1ピクセル1ビット
     int line_size = ((width + 31) / 32) * 4;
     for (int y = height - 1; y >= 0; --y) {
-        unsigned char buf[line_size];
-        for (int x = 0; x < line_size; ++x) {
-            int index = x / 4;
-            if (index == 0) {
-                buf[index] = 0x0;
-            }
-            if (x < width && c->canvas[x][y] == ' ') {
-                buf[index] |= 1 << (x % 4);
+        unsigned char buf[line_size];  // line_sizeバイト
+        memset(buf, 0, sizeof(unsigned char) * line_size);
+        for (int i = 0; i < line_size; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                const int x = i * 8 + j;
+                if (x < width && c->canvas[x][y] == ' ') {
+                    buf[i] |= 1 << j;
+                }
             }
         }
-        fwrite(&buf, sizeof(char), line_size, fp);
+        fwrite(buf, sizeof(unsigned char), line_size, fp);
     }
 
     fclose(fp);
@@ -408,7 +408,8 @@ void init_bitmapfileheader(BitmapFileHeader *header) {
     header->size = 0;
     header->reserved1 = 0;
     header->reserved2 = 0;
-    header->offbits = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + sizeof(BitmapRGBQUAD) * 2;
+    header->offbits = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) +
+                      sizeof(BitmapRGBQUAD) * 2;
 }
 
 // Bitmap情報ヘッダ初期化関数
