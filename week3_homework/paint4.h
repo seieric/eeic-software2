@@ -13,7 +13,7 @@ typedef struct {
     int height;
     char **canvas;
     char pen;
-    ClipBoard *clipboard; // クリップボード
+    ClipBoard *clipboard;  // クリップボード
 } Canvas;
 
 // 最大履歴と現在位置の情報は持たない
@@ -76,6 +76,7 @@ typedef enum res {
     UNDO,
     SAVE,
     SAVETXT,
+    SAVEBMP,
     LOAD_SUCCESS,
     LOAD_ERROR,
     UNKNOWN,
@@ -99,8 +100,50 @@ void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
 void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
                const int rect_height);
 void cut_rect(Canvas *c, const int x0, const int y0, const int rect_width,
-               const int rect_height); 
+              const int rect_height);
 void paste_rect(Canvas *c, const int x0, const int y0);
 Result interpret_command(const char *command, History *his, Canvas *c);
 void save_history(const char *filename, History *his);
 void save_text(const char *filename, Canvas *c);
+void save_bitmap(const char *filename, Canvas *c);
+
+// ビットマップ用
+#pragma pack(push, 1)
+// ファイルヘッダ
+typedef struct {
+    unsigned short type;       // ファイルタイプ（2バイト）
+    unsigned int size;         // ファイルサイズ（4バイト）
+    unsigned short reserved1;  // 予約領域1（2バイト）
+    unsigned short reserved2;  // 予約領域2（2バイト）
+    unsigned int offbits;      // 画像データの位置（4バイト）
+} BitmapFileHeader;
+
+// 情報ヘッダ（INFOタイプ）
+typedef struct {
+    unsigned int size;          // ヘッダのサイズ（4バイト）
+    int image_width;            // 画像幅（4バイト）
+    int image_height;           // 画像高さ（4バイト）
+    unsigned short num_planes;  // チャンネル数（2バイト）
+    unsigned short num_bits;  // ピクセルあたりのビット数（2バイト）
+    unsigned int compress_type;  // 圧縮タイプ（4バイト）
+    unsigned int image_size;     // 画像のバイト数（4バイト）
+    unsigned int x_ppm;  // 水平方向1メートルあたりのピクセル数（4バイト）
+    unsigned int y_ppm;  // 垂直方向1メートルあたりのピクセル数（4バイト）
+    unsigned int num_colors;  // カラーパレットに格納される色数（4バイト）
+    unsigned int
+        num_sig_colors;  // カラーパレットに格納される色のうち重要色の数（4バイト）
+} BitmapInfoHeader;
+
+// カラー
+typedef struct {
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+    unsigned char reserved;
+} BitmapRGBQUAD;
+#pragma pack(pop)
+
+void init_bitmapfileheader(BitmapFileHeader *);
+void init_bitmapinfoheader(const int, const int, BitmapInfoHeader *);
+void init_bitmaprgbquad(const unsigned char r, const unsigned char g,
+                        const unsigned char b, BitmapRGBQUAD *color);

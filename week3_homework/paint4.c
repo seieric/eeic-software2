@@ -353,6 +353,89 @@ void save_text(const char *filename, Canvas *c) {
     fclose(fp);
 }
 
+// ビットマップ画像として保存する
+void save_bitmap(const char *filename, Canvas *c) {
+    const char *default_text_file = "your_paint.bmp";
+    if (filename == NULL) filename = default_text_file;
+
+    const int width = c->width;
+    const int height = c->height;
+
+    FILE *fp;
+    if ((fp = fopen(filename, "wb")) == NULL) {
+        fprintf(stderr, "error: cannot open %s.\n", filename);
+        return;
+    }
+
+    BitmapFileHeader file_header;
+    BitmapInfoHeader info_header;
+    init_bitmapfileheader(&file_header);
+    init_bitmapinfoheader(width, height, &info_header);
+
+    BitmapRGBQUAD colors[2];
+    init_bitmaprgbquad(0, 0, 0, &colors[0]);        // black
+    init_bitmaprgbquad(255, 255, 255, &colors[1]);  // white
+
+    // ヘッダとカラーパレットを書き込む
+    fwrite(&file_header, sizeof(BitmapFileHeader), 1, fp);
+    fwrite(&info_header, sizeof(BitmapInfoHeader), 1, fp);
+    fwrite(colors, sizeof(colors), 2, fp);
+
+    // 行ごとに画像データを書き込む
+    // 左下から右方向に読み込んでいく
+    // 1ピクセル1ビット
+    int line_size = ((width + 31) / 32) * 4;
+    for (int y = height - 1; y >= 0; --y) {
+        unsigned char buf[line_size];
+        for (int x = 0; x < line_size; ++x) {
+            int index = x / 4;
+            if (index == 0) {
+                buf[index] = 0x0;
+            }
+            if (x < width && c->canvas[x][y] == ' ') {
+                buf[index] |= 1 << (x % 4);
+            }
+        }
+        fwrite(&buf, sizeof(char), line_size, fp);
+    }
+
+    fclose(fp);
+}
+
+// Bitmapファイルヘッダ初期化関数
+void init_bitmapfileheader(BitmapFileHeader *header) {
+    header->type = 0x4d42;
+    header->size = 0;
+    header->reserved1 = 0;
+    header->reserved2 = 0;
+    header->offbits = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + sizeof(BitmapRGBQUAD) * 2;
+}
+
+// Bitmap情報ヘッダ初期化関数
+void init_bitmapinfoheader(const int image_width, const int image_height,
+                           BitmapInfoHeader *header) {
+    header->size = 40;
+    header->image_width = image_width;
+    header->image_height = image_height;
+    header->num_planes = 1;     // 1チャンネル
+    header->num_bits = 1;       // 1ピクセル1ビット
+    header->compress_type = 0;  // 非圧縮
+    header->image_size = 0;
+    header->x_ppm = 0;
+    header->y_ppm = 0;
+    header->num_colors = 2;      // 2^num_bits
+    header->num_sig_colors = 0;  // すべてが重要色
+}
+
+// BitmapRGBカラー初期化関数
+void init_bitmaprgbquad(const unsigned char r, const unsigned char g,
+                        const unsigned char b, BitmapRGBQUAD *color) {
+    color->blue = b;
+    color->green = g;
+    color->red = r;
+    color->reserved = 0;
+}
+
 Result interpret_command(const char *command, History *his, Canvas *c) {
     char buf[his->bufsize];
     strcpy(buf, command);
@@ -558,6 +641,12 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return SAVETXT;
     }
 
+    if (strcmp(s, "savebmp") == 0) {
+        s = strtok(NULL, " ");
+        save_bitmap(s, c);
+        return SAVEBMP;
+    }
+
     if (strcmp(s, "load") == 0) {
         s = strtok(NULL, " ");
 
@@ -608,6 +697,8 @@ char *strresult(Result res) {
             return "history saved";
         case SAVETXT:
             return "paint saved as text";
+        case SAVEBMP:
+            return "paint saved as bitmap image";
         case LINE:
             return "1 line drawn";
         case RECT:
