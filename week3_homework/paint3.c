@@ -397,7 +397,6 @@ void his_push_back(History *his, const char *command) {
 void his_pop_back(History *his) {
     Command *com = his->begin;
     Command *prev = NULL;
-    printf("t");
     if (com) {
         while (com->next) {
             prev = com;
