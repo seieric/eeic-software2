@@ -1,2 +1,5 @@
-circle 5 5 5
-line 1 1 10 10
+circle 20 10 8
+line 15 8 15 8
+line 25 8 25 8
+line 16 14 24 14
+line 20 9 20 12
