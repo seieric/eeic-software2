@@ -396,7 +396,7 @@ void save_bitmap(const char *filename, Canvas *c) {
             for (int j = 0; j < 8; ++j) {
                 const int x = i * 8 + j;
                 if (x < width && c->canvas[x][y] != ' ') {
-                    buf[i] |= 1 << j;
+                    buf[i] |= 1 << (8 - j);
                 }
             }
         }
