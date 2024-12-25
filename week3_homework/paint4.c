@@ -687,6 +687,14 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return UNDO;
     }
 
+    if (strcmp(s, "redo") == 0) {
+        if (his->cur && his->cur->next) {
+            interpret_command(his->cur->next->str, his, c);
+            his->cur = his->cur->next;
+        }
+        return REDO;
+    }
+
     if (strcmp(s, "quit") == 0) {
         return EXIT;
     }
@@ -722,6 +730,8 @@ char *strresult(Result res) {
             return "area pasted";
         case UNDO:
             return "undo!";
+        case REDO:
+            return "redo!";
         case LOAD_SUCCESS:
             return "successfully loaded history";
         case LOAD_ERROR:

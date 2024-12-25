@@ -77,6 +77,7 @@ typedef enum res {
     CUT,
     PASTE,
     UNDO,
+    REDO,
     SAVE,
     SAVETXT,
     SAVEBMP,
