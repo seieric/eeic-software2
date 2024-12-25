@@ -28,10 +28,13 @@ struct command {
 // コマンドリストの先頭へのポインタをメンバに持つ構造体としてHistoryを考える。
 // 履歴がない時点ではbegin = NULL となる。
 typedef struct {
-    Command *begin;
+    Command *begin;  // 先頭
+    Command *last;   // 末尾
+    Command *cur;    // 現在位置
     size_t bufsize;
 } History;
 
+void his_add(History *his, const char *str);
 void his_push_back(History *his, const char *str);
 void his_pop_back(History *his);
 size_t his_size(History *his);

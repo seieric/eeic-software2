@@ -13,7 +13,8 @@
 int main(int argc, char **argv) {
     // for history recording
     const int bufsize = 1000;
-    History his = (History){.begin = NULL, .bufsize = bufsize};
+    History his =
+        (History){.begin = NULL, .last = NULL, .cur = NULL, .bufsize = bufsize};
 
     int width;
     int height;
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
         height = (int)h;
     }
     char pen = '*';
-    his_push_back(&his, "chpen *\n");
+    his_add(&his, "chpen *\n");
     char buf[his.bufsize];
 
     Canvas *c = init_canvas(width, height, pen);
@@ -60,7 +61,7 @@ int main(int argc, char **argv) {
         // LINEの場合はHistory構造体に入れる
         if (r == LINE || r == RECT || r == CIRCLE || r == CHPEN || r == FILL ||
             r == COPY || r == CUT || r == PASTE) {
-            his_push_back(&his, buf);
+            his_add(&his, buf);
         }
         rewind_screen(2);           // command results
         clear_command();            // command itself
@@ -322,9 +323,12 @@ void save_history(const char *filename, History *his) {
     }
 
     Command *com = his->begin;
-    while (com) {
+    while (com != his->cur) {
         fprintf(fp, "%s", com->str);
         com = com->next;
+    }
+    if (his->cur) {
+        fprintf(fp, "%s", his->cur->str);
     }
 
     fclose(fp);
@@ -659,7 +663,7 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
 
         while (fgets(buf, his->bufsize, fp) != NULL) {
             if (strcmp(buf, "\n") == 0) break;
-            his_push_back(his, buf);
+            his_add(his, buf);
         }
 
         Command *com = his->begin;
@@ -673,12 +677,12 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
     if (strcmp(s, "undo") == 0) {
         reset_canvas(c);
         if (his_size(his) > 1) {
-            his_pop_back(his);
             Command *com = his->begin;
-            while (com) {
+            while (com != his->cur) {
                 interpret_command(com->str, his, c);
                 com = com->next;
             }
+            his->cur = his->cur->prev;
         }
         return UNDO;
     }
@@ -734,39 +738,45 @@ char *strresult(Result res) {
     return NULL;
 }
 
+void his_add(History *his, const char *command) {
+    if (his->cur != his->last) {
+        // undoされている場合は現在位置より後の履歴を先に削除する
+        Command *com = his->last;
+        while (com != his->cur) {
+            his_pop_back(his);
+            com = his->last;
+        }
+    }
+    his_push_back(his, command);
+    // カーソルを初期化
+    his->cur = his->last;
+}
+
 void his_push_back(History *his, const char *command) {
     Command *new = (Command *)malloc(sizeof(Command));
     char *s = (char *)malloc(strlen(command) + 1);
     strcpy(s, command);
-    *new = (Command){.str = s, .prev = NULL, .next = NULL, .bufsize = strlen(command)};
+    *new = (Command){
+        .str = s, .prev = NULL, .next = NULL, .bufsize = strlen(command)};
 
-    Command *com = his->begin;
-    Command *prev = NULL;
-    if (com) {
-        while (com->next) {
-            com->prev = prev;
-            prev = com;
-            com = com->next;
-            prev->next = com;
-        }
-        com->next = new;
+    if (his->begin) {
+        his->last->next = new;
+        new->prev = his->last;
     } else {
         his->begin = new;
     }
+    his->last = new;
 }
 
 void his_pop_back(History *his) {
-    Command *com = his->begin;
-    Command *prev = NULL;
+    Command *com = his->last;
     if (com) {
-        while (com->next) {
-            prev = com;
-            com = com->next;
-        }
         if (com == his->begin) {
             his->begin = NULL;
+            his->last = NULL;
         } else {
-            prev->next = NULL;
+            com->prev->next = NULL;
+            his->last = com->prev;
         }
         free(com->str);
         free(com);
@@ -776,10 +786,11 @@ void his_pop_back(History *his) {
 size_t his_size(History *his) {
     size_t size = 0;
     Command *com = his->begin;
-    while (com) {
+    while (com != his->cur) {
         com = com->next;
         ++size;
     }
+    if (his->cur) ++size;
     return size;
 }
 
