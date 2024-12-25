@@ -16,7 +16,9 @@
 基本課題のペイントソフトに、以下のコマンドを追加した。
 
 - 描画機能
-  - `fill <x> <y>`：指定した座標と周囲の文字が同じ場合、描画文字で塗りつぶす。[Span filling](https://en.wikipedia.org/wiki/Flood_fill#Span_filling)アルゴリズムを実装した。座標が範囲外の場合はエラーメッセージを表示する。
+  - `fill <x> <y>`：指定した座標と周囲の文字が同じ場合、描画文字で塗りつぶす。
+    - [Span filling](https://en.wikipedia.org/wiki/Flood_fill#Span_filling)アルゴリズムを実装した。- 指定した座標の文字と同じ文字の接続領域を塗りつぶす。
+    - 指定座標が範囲外の場合はエラーメッセージを表示する。
 - 保存機能
   - `savebmp <filename>`：現在の**ペイントをBMPファイルで**保存する。ファイル名が指定されていない場合は、`your_paint.bmp`として保存する。
     - BMPファイルの情報ヘッダの形式にはINFOタイプを使用。ビット数は1ビットの白黒画像として保存。非圧縮。
