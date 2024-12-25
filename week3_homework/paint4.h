@@ -21,6 +21,7 @@ typedef struct command Command;
 struct command {
     char *str;
     size_t bufsize;
+    Command *prev;
     Command *next;
 };
 

@@ -738,12 +738,16 @@ void his_push_back(History *his, const char *command) {
     Command *new = (Command *)malloc(sizeof(Command));
     char *s = (char *)malloc(strlen(command) + 1);
     strcpy(s, command);
-    *new = (Command){.str = s, .next = NULL, .bufsize = strlen(command)};
+    *new = (Command){.str = s, .prev = NULL, .next = NULL, .bufsize = strlen(command)};
 
     Command *com = his->begin;
+    Command *prev = NULL;
     if (com) {
         while (com->next) {
+            com->prev = prev;
+            prev = com;
             com = com->next;
+            prev->next = com;
         }
         com->next = new;
     } else {
@@ -754,7 +758,6 @@ void his_push_back(History *his, const char *command) {
 void his_pop_back(History *his) {
     Command *com = his->begin;
     Command *prev = NULL;
-    printf("t");
     if (com) {
         while (com->next) {
             prev = com;
