@@ -48,7 +48,6 @@ typedef struct {
 
 void ps_push_back(PointStack *ps, const int x, const int y);
 Point ps_pop_back(PointStack *ps);
-size_t ps_size(PointStack *ps);
 
 // functions for Canvas type
 Canvas *init_canvas(int width, int height, char pen);
@@ -89,6 +88,8 @@ char *strresult(Result res);
 
 int max(const int a, const int b);
 int min(const int a, const int b);
+
+// 描画機能
 void draw_line(Canvas *c, const int x0, const int y0, const int x1,
                const int y1);
 void draw_rect(Canvas *c, const int x0, const int y0, const int rect_width,
@@ -97,12 +98,17 @@ void draw_circle(Canvas *c, const int x0, const int y0, const int r);
 void fill_area(Canvas *c, const int x0, const int y0);
 void scan_span(Canvas *c, char pen, int lx, const int rx, const int y,
                PointStack *ps);
+
+// コピー（カット）＆ペースト
 void copy_rect(Canvas *c, const int x0, const int y0, const int rect_width,
                const int rect_height);
 void cut_rect(Canvas *c, const int x0, const int y0, const int rect_width,
               const int rect_height);
 void paste_rect(Canvas *c, const int x0, const int y0);
+
 Result interpret_command(const char *command, History *his, Canvas *c);
+
+// 保存機能
 void save_history(const char *filename, History *his);
 void save_text(const char *filename, Canvas *c);
 void save_bitmap(const char *filename, Canvas *c);

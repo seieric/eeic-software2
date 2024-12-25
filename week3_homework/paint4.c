@@ -818,13 +818,3 @@ Point ps_pop_back(PointStack *ps) {
     free(p);
     return last;
 }
-
-size_t ps_size(PointStack *ps) {
-    size_t size = 0;
-    Point *p = ps->begin;
-    while (p) {
-        p = p->next;
-        ++size;
-    }
-    return size;
-}
