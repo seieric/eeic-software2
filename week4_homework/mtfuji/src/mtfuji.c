@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
 
     // x[0]: a, x[1]: b (y=ax+b)
     double *x = malloc(2 * sizeof(double));
-    x[0] = 7;
-    x[1] = 20;
+    x[0] = 0;
+    x[1] = 0;
 
     printf("alpha = %f\n", alpha);
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     printf("number of iterations = %d\n", iter);
 
     printf("-----\n");
-    printf("Estimated temperature of Mt. Fuji: %lf\n", MTFUJI_ALT * x[0] + x[1]);
+    printf("Estimated temperature of Mt. Fuji (altitude: 3.376km): %lf\n", MTFUJI_ALT * x[0] + x[1]);
 
     free(x);
 
