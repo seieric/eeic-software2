@@ -8,17 +8,20 @@ SRCDIR = ./src
 CFLAGS = -Wall -I$(INCLUDE) 
 LDFLAGS = -L$(LIBDIR)
 
-#LDLIBS = -linteger 
+LDLIBS = -lhistory
 
 SRC = $(SRCDIR)/paintapp.c
-OBJS = $(SRCDIR)/paintapp.o $(SRCDIR)/canvas.o $(SRCDIR)/display.o $(SRCDIR)/history.o
-#LIB = $(LIBDIR)/libinteger.a
+OBJS = $(SRCDIR)/paintapp.o $(SRCDIR)/canvas.o $(SRCDIR)/display.o
+LIBS = $(LIBDIR)/libhistory.a
 
 TARGET = $(BINDIR)/paintapp
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
+
+$(LIBS): $(SRCDIR)/history.o
+	$(AR) rsv $@ $^
 
 .PHONY: clean
 clean:
-	rm $(OBJS) $(TARGET)
+	rm $(OBJS) $(LIBS) $(TARGET) $(SRCDIR)/history.o
