@@ -1,13 +1,5 @@
 #include <stdio.h>
-
-// Structure for canvas
-typedef struct
-{
-    int width;
-    int height;
-    char **canvas;
-    char pen;
-} Canvas;
+#include <canvas.h>
 
 // Command 構造体と History構造体
 // [*]
@@ -23,12 +15,6 @@ typedef struct
     Command *begin;
     size_t bufsize; // [*] : この方が効率的ですね。一部の方から指摘ありました。
 } History;
-
-// functions for Canvas type
-Canvas *init_canvas(int width, int height, char pen);
-void reset_canvas(Canvas *c);
-void print_canvas(Canvas *c);
-void free_canvas(Canvas *c);
 
 // display functions
 void rewind_screen(unsigned int line); 

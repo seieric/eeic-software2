@@ -11,13 +11,13 @@ LDFLAGS = -L$(LIBDIR)
 #LDLIBS = -linteger 
 
 SRC = $(SRCDIR)/paintapp.c
-#OBJ = $(SRCDIR)/intlib.o
+OBJS = $(SRCDIR)/canvas.o $(SRCDIR)/paintapp.o
 #LIB = $(LIBDIR)/libinteger.a
 
 TARGET = $(BINDIR)/paintapp
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 .PHONY: clean
 clean:
