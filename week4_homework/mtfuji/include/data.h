@@ -6,3 +6,4 @@ typedef struct {
 } Sample;
 
 Sample **load_data(const char *filename, int *data_size);
+int comp_data(const void *x0, const void *x1);

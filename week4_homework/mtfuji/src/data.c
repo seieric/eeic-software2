@@ -38,7 +38,17 @@ Sample **load_data(const char *filename, int *data_size) {
         ++*data_size;
     }
 
+    qsort(samples, *data_size, sizeof(Sample *), comp_data);
+
     fclose(fp);
 
     return samples;
+}
+
+int comp_data(const void *x0, const void *x1) {
+    const Sample *s0 = *(const Sample **)x0;
+    const Sample *s1 = *(const Sample **)x1;
+    if (s0->alt < s1->alt) return -1;
+    if (s0->alt > s1->alt) return 1;
+    return 0;
 }
