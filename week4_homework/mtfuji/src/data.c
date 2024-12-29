@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define BUF_SIZE 1000
+#define LOC_SIZE 25
 
 Sample **load_data(const char *filename, int *data_size) {
     FILE *fp;
@@ -23,7 +24,7 @@ Sample **load_data(const char *filename, int *data_size) {
     *data_size = 0;
     while (fgets(buf, BUF_SIZE, fp) != NULL && *data_size < num_rows) {
         Sample *sample = (Sample *)malloc(sizeof(Sample));
-        char *loc = (char *)malloc(100 * sizeof(char));
+        char *loc = (char *)malloc(LOC_SIZE * sizeof(char));
 
         if (sscanf(buf, "%[^,],%lf ,%lf \n", loc, &(sample->alt),
                    &(sample->temp)) != 3) {
