@@ -31,7 +31,7 @@ void save_history(const char *filename, History *his) {
 
 void push_command(History *his, const char *str) {
     strcpy(his->commands[his->hsize], str);
-    his->bufsize++;
+    his->hsize++;
 }
 
 History *init_history(size_t bufsize) {
