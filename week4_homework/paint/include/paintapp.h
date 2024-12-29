@@ -16,11 +16,6 @@ typedef struct
     size_t bufsize; // [*] : この方が効率的ですね。一部の方から指摘ありました。
 } History;
 
-// display functions
-void rewind_screen(unsigned int line); 
-void clear_command(void);
-void clear_screen(void);
-
 // enum for interpret_command results
 typedef enum res{ EXIT, LINE, UNDO, SAVE, UNKNOWN, ERRNONINT, ERRLACKARGS, NOCOMMAND} Result;
 // Result 型に応じて出力するメッセージを返す

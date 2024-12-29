@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "canvas.h"
+#include "display.h"
 
 int main(int argc, char **argv) {
     // for history recording
@@ -75,12 +76,6 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-void rewind_screen(unsigned int line) { printf("\e[%dA", line); }
-
-void clear_command(void) { printf("\e[2K"); }
-
-void clear_screen(void) { printf("\e[2J"); }
 
 int max(const int a, const int b) { return (a > b) ? a : b; }
 void draw_line(Canvas *c, const int x0, const int y0, const int x1,

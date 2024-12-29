@@ -11,7 +11,7 @@ LDFLAGS = -L$(LIBDIR)
 #LDLIBS = -linteger 
 
 SRC = $(SRCDIR)/paintapp.c
-OBJS = $(SRCDIR)/canvas.o $(SRCDIR)/paintapp.o
+OBJS = $(SRCDIR)/paintapp.o $(SRCDIR)/canvas.o $(SRCDIR)/display.o
 #LIB = $(LIBDIR)/libinteger.a
 
 TARGET = $(BINDIR)/paintapp
