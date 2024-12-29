@@ -8,6 +8,7 @@
 
 #include "canvas.h"
 #include "display.h"
+#include "history.h"
 
 int main(int argc, char **argv) {
     // for history recording
@@ -95,23 +96,6 @@ void draw_line(Canvas *c, const int x0, const int y0, const int x1,
     }
 }
 
-void save_history(const char *filename, History *his) {
-    const char *default_history_file = "history.txt";
-    if (filename == NULL) filename = default_history_file;
-
-    FILE *fp;
-    if ((fp = fopen(filename, "w")) == NULL) {
-        fprintf(stderr, "error: cannot open %s.\n", filename);
-        return;
-    }
-    // [*] 線形リスト版
-    for (Command *p = his->begin; p != NULL; p = p->next) {
-        fprintf(fp, "%s", p->str);
-    }
-
-    fclose(fp);
-}
-
 Result interpret_command(const char *command, History *his, Canvas *c) {
     char buf[his->bufsize];
     strcpy(buf, command);
@@ -180,27 +164,6 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         return EXIT;
     }
     return UNKNOWN;
-}
-
-// [*] 線形リストの末尾にpush する
-Command *push_command(History *his, const char *str) {
-    Command *c = (Command *)malloc(sizeof(Command));
-    char *s = (char *)malloc(his->bufsize);
-    strcpy(s, str);
-
-    *c = (Command){.str = s, .bufsize = his->bufsize, .next = NULL};
-
-    Command *p = his->begin;
-
-    if (p == NULL) {
-        his->begin = c;
-    } else {
-        while (p->next != NULL) {
-            p = p->next;
-        }
-        p->next = c;
-    }
-    return c;
 }
 
 char *strresult(Result res) {
