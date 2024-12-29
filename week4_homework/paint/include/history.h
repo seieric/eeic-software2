@@ -5,7 +5,7 @@ typedef struct history History;
 
 void save_history(const char *filename, History *his);
 
-void *push_command(History *his, const char *str);
+void push_command(History *his, const char *str);
 
 History *init_history(size_t bufsize);
 
