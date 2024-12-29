@@ -54,3 +54,5 @@ char *get_command(History *his, int i) {
 }
 
 void delete_command(History *his, int i) { his->hsize--; }
+
+bool has_space(History *his) { return his->hsize < his->max_history; }

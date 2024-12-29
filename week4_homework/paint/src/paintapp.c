@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 
     printf("\n");  // required especially for windows env
 
-    while (1) {
+    while (has_space(his)) {
         // [*]
         // hsize はひとまずなし
         // 作る場合はリスト長を調べる関数を作っておく

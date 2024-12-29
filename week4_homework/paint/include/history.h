@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <stdbool.h>
 
 typedef struct history History;
 
@@ -13,3 +14,5 @@ size_t get_bufsize(History *his);
 
 char *get_command(History *his, int i);
 void delete_command(History *his, int i);
+
+bool has_space(History *his);

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// 線形リスト実装
+
 typedef struct command Command;
 struct command {
     char *str;
@@ -85,3 +87,5 @@ void delete_command(History *his, int i) {
     free(p->str);
     free(p);
 }
+
+bool has_space(History *his) { return true; }
