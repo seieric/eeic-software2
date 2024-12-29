@@ -18,7 +18,7 @@ void f_gradient(const double x[], double g[], int data_size,
     g[0] = 0.0;
     g[1] = 0.0;
     for (int i = 0; i < data_size; ++i) {
-        g[0] += -2 * (samples[i]->temp - x[0] * samples[i]->alt - x[1]) * x[0];
+        g[0] += -2 * (samples[i]->temp - x[0] * samples[i]->alt - x[1]) * samples[i]->alt;
         g[1] += -2 * (samples[i]->temp - x[0] * samples[i]->alt - x[1]);
     }
 }
