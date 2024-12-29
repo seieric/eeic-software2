@@ -23,8 +23,8 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < data_size; ++i) {
         printf("|%15s|%11lf|%11lf|\n", samples[i]->loc, samples[i]->alt,
                samples[i]->temp);
-        fflush(stdout);
     }
+    printf("|---------------|-----------|-----------|\n\n");
 
     // 引数の個数が2の時だけ、alpha に第2引数を採用し、それ以外は0.01
     const double alpha = (argc == 3) ? atof(argv[2]) : 0.01;
@@ -43,6 +43,12 @@ int main(int argc, char *argv[]) {
     printf("number of iterations = %d\n", iter);
 
     free(x);
+
+    for (int i = 0; i < data_size; ++i) {
+        free(samples[i]->loc);
+        free(samples[i]);
+    }
+    free(samples);
 
     return 0;
 }
