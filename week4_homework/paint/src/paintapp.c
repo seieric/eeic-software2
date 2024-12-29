@@ -15,8 +15,7 @@ int main(int argc, char **argv) {
 
     const int bufsize = 1000;
 
-    // [*]
-    History his = (History){.begin = NULL, .bufsize = bufsize};
+    History *his = init_history(bufsize);
 
     int width;
     int height;
@@ -54,7 +53,7 @@ int main(int argc, char **argv) {
         printf("* > ");
         if (fgets(buf, bufsize, stdin) == NULL) break;
 
-        const Result r = interpret_command(buf, &his, c);
+        const Result r = interpret_command(buf, his, c);
 
         if (r == EXIT) break;
 
@@ -64,7 +63,7 @@ int main(int argc, char **argv) {
         // LINEの場合はHistory構造体に入れる
         if (r == LINE) {
             // [*]
-            push_command(&his, buf);
+            push_command(his, buf);
         }
 
         rewind_screen(2);           // command results
@@ -97,7 +96,7 @@ void draw_line(Canvas *c, const int x0, const int y0, const int x1,
 }
 
 Result interpret_command(const char *command, History *his, Canvas *c) {
-    char buf[his->bufsize];
+    char buf[get_bufsize(his)];
     strcpy(buf, command);
     buf[strlen(buf) - 1] = 0;  // remove the newline character at the end
 
@@ -138,7 +137,7 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
         reset_canvas(c);
         //[*] 線形リストの先頭からスキャンして逐次実行
         // pop_back のスキャン中にinterpret_command を絡めた感じ
-        Command *p = his->begin;
+        Command *p = get_begin(his);
         if (p == NULL) {
             return NOCOMMAND;
         } else {
@@ -150,7 +149,7 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
             }
             // 1つしかないコマンドのundoではリストの先頭を変更する
             if (q == NULL) {
-                his->begin = NULL;
+                set_begin(his, NULL);
             } else {
                 q->next = NULL;
             }

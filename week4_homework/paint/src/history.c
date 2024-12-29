@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct history {
+    Command *begin;
+    size_t bufsize;  // [*] : この方が効率的ですね。一部の方から指摘ありました。
+};
+
 void save_history(const char *filename, History *his) {
     const char *default_history_file = "history.txt";
     if (filename == NULL) filename = default_history_file;
@@ -38,5 +43,19 @@ Command *push_command(History *his, const char *str) {
         }
         p->next = c;
     }
+    return c;
+}
+
+History *init_history(size_t bufsize) {
+    History *his = (History *)malloc(sizeof(History));
+    *his = (History){.begin = NULL, .bufsize = bufsize};
+    return his;
+}
+
+size_t get_bufsize(History *his) { return his->bufsize; }
+
+Command *get_begin(History *his) { return his->begin; }
+Command *set_begin(History *his, Command *c) {
+    his->begin = c;
     return c;
 }
