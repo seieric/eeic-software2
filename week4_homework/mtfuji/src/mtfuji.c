@@ -5,6 +5,8 @@
 #include "func.h"
 #include "optimize.h"
 
+#define MTFUJI_ALT 3.376
+
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
         printf("usage: %s <csv file> <alpha>\n", argv[0]);
@@ -41,6 +43,9 @@ int main(int argc, char *argv[]) {
     const int iter = optimize(alpha, dim, x, f_gradient, f_value, data_size, samples);
 
     printf("number of iterations = %d\n", iter);
+
+    printf("-----\n");
+    printf("Estimated temperature of Mt. Fuji: %lf\n", MTFUJI_ALT * x[0] + x[1]);
 
     free(x);
 
