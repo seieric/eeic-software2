@@ -31,10 +31,10 @@ int main(int argc, char *argv[]) {
 
     const int dim = f_dimension();
 
-    double *x = malloc(dim * sizeof(double));
-    for (int i = 0; i < dim; i++) {
-        x[i] = 0;
-    }
+    // x[0]: a, x[1]: b (y=ax+b)
+    double *x = malloc(2 * sizeof(double));
+    x[0] = 7;
+    x[1] = 20;
 
     printf("alpha = %f\n", alpha);
 
