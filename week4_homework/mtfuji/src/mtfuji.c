@@ -5,8 +5,6 @@
 #include "func.h"
 #include "optimize.h"
 
-#define BUF_SIZE 1000
-
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
         printf("usage: %s <csv file> <alpha>\n", argv[0]);
@@ -40,7 +38,7 @@ int main(int argc, char *argv[]) {
 
     printf("alpha = %f\n", alpha);
 
-    const int iter = optimize(alpha, dim, x, f_gradient, data_size, samples);
+    const int iter = optimize(alpha, dim, x, f_gradient, f_value, data_size, samples);
 
     printf("number of iterations = %d\n", iter);
 
