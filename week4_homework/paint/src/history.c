@@ -33,7 +33,7 @@ void save_history(const char *filename, History *his) {
 }
 
 // [*] 線形リストの末尾にpush する
-void *push_command(History *his, const char *str) {
+void push_command(History *his, const char *str) {
     Command *c = (Command *)malloc(sizeof(Command));
     char *s = (char *)malloc(his->bufsize);
     strcpy(s, str);
@@ -50,7 +50,6 @@ void *push_command(History *his, const char *str) {
         }
         p->next = c;
     }
-    return c;
 }
 
 History *init_history(size_t bufsize) {
