@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct command Command;
+struct command {
+    char *str;
+    size_t bufsize;
+    Command *next;
+};
+
 struct history {
     Command *begin;
     size_t bufsize;  // [*] : この方が効率的ですね。一部の方から指摘ありました。
@@ -26,7 +33,7 @@ void save_history(const char *filename, History *his) {
 }
 
 // [*] 線形リストの末尾にpush する
-Command *push_command(History *his, const char *str) {
+void *push_command(History *his, const char *str) {
     Command *c = (Command *)malloc(sizeof(Command));
     char *s = (char *)malloc(his->bufsize);
     strcpy(s, str);
@@ -54,8 +61,28 @@ History *init_history(size_t bufsize) {
 
 size_t get_bufsize(History *his) { return his->bufsize; }
 
-Command *get_begin(History *his) { return his->begin; }
-Command *set_begin(History *his, Command *c) {
-    his->begin = c;
-    return c;
+char *get_command(History *his, int i) {
+    Command *p = his->begin;
+    for (int j = 0; j < i; ++j) {
+        if (p == NULL) return NULL;
+        p = p->next;
+    }
+    if (p == NULL) return NULL;
+    return p->str;
+}
+
+void delete_command(History *his, int i) {
+    Command *p = his->begin;
+    Command *prev = NULL;
+    for (int j = 0; j < i; ++j) {
+        prev = p;
+        p = p->next;
+    }
+    if (prev == NULL) {
+        his->begin = NULL;
+    } else {
+        prev->next = NULL;
+    }
+    free(p->str);
+    free(p);
 }

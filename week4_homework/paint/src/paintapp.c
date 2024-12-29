@@ -135,26 +135,20 @@ Result interpret_command(const char *command, History *his, Canvas *c) {
 
     if (strcmp(s, "undo") == 0) {
         reset_canvas(c);
-        //[*] 線形リストの先頭からスキャンして逐次実行
-        // pop_back のスキャン中にinterpret_command を絡めた感じ
-        Command *p = get_begin(his);
-        if (p == NULL) {
+        char *str = get_command(his, 0);
+        if (str == NULL) {
             return NOCOMMAND;
         } else {
-            Command *q = NULL;  // 新たな終端を決める時に使う
-            while (p->next != NULL) {  // 終端でないコマンドは実行して良い
-                interpret_command(p->str, his, c);
-                q = p;
-                p = p->next;
+            char *next;
+            for (int i = 0;; ++i) {
+                if ((next = get_command(his, i + 1)) != NULL) {
+                    interpret_command(str, his, c);
+                    str = next;
+                } else {
+                    delete_command(his, i);
+                    break;
+                }
             }
-            // 1つしかないコマンドのundoではリストの先頭を変更する
-            if (q == NULL) {
-                set_begin(his, NULL);
-            } else {
-                q->next = NULL;
-            }
-            free(p->str);
-            free(p);
             return UNDO;
         }
     }
