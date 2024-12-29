@@ -5,4 +5,4 @@ typedef struct {
     double temp;  // temperature (centigrade)
 } Sample;
 
-int load_data(const char *filename, Sample **samples);
+Sample **load_data(const char *filename, int *data_size);

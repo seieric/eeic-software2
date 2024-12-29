@@ -13,15 +13,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Sample **samples = NULL;
-    int data_size = load_data(argv[1], samples);
+    int data_size;
+    Sample **samples = load_data(argv[1], &data_size);
     if (data_size == 0) {
         printf("error: unable to load data.\n");
         return 1;
     }
 
+    printf("|Location       |Altitude   |Temperature|\n");
+    printf("|---------------|-----------|-----------|\n");
     for (int i = 0; i < data_size; ++i) {
-        printf("Location: , Altitude: %lf, Temperature: %lf\n", samples[i]->alt,
+        printf("|%15s|%11lf|%11lf|\n", samples[i]->loc, samples[i]->alt,
                samples[i]->temp);
         fflush(stdout);
     }

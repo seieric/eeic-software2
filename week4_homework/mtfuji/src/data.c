@@ -5,23 +5,23 @@
 #include <string.h>
 #define BUF_SIZE 1000
 
-int load_data(const char *filename, Sample **samples) {
+Sample **load_data(const char *filename, int *data_size) {
     FILE *fp;
     if ((fp = fopen(filename, "r")) == NULL) return 0;
 
     char buf[BUF_SIZE];
 
-    int data_size = 0;
+    int num_rows = 0;
     char c;
     while ((c = fgetc(fp)) != EOF) {
-        if (c == '\n') ++data_size;
+        if (c == '\n') ++num_rows;
     }
     fseek(fp, 0L, SEEK_SET);
 
-    samples = (Sample **)malloc(data_size * sizeof(Sample *));
+    Sample **samples = (Sample **)malloc(num_rows * sizeof(Sample *));
 
-    int data_id = 0;
-    while (fgets(buf, BUF_SIZE, fp) != NULL && data_id < data_size) {
+    *data_size = 0;
+    while (fgets(buf, BUF_SIZE, fp) != NULL && *data_size < num_rows) {
         Sample *sample = (Sample *)malloc(sizeof(Sample));
         char *loc = (char *)malloc(100 * sizeof(char));
 
@@ -33,11 +33,11 @@ int load_data(const char *filename, Sample **samples) {
         }
 
         sample->loc = loc;
-        samples[data_id] = sample;
-        ++data_id;
+        samples[*data_size] = sample;
+        ++*data_size;
     }
 
     fclose(fp);
 
-    return data_id;
+    return samples;
 }
