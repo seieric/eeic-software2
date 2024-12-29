@@ -8,7 +8,7 @@
 #define BUF_SIZE 1000
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc != 2 && argc != 3) {
         printf("usage: %s <csv file> <alpha>\n", argv[0]);
         return 1;
     }
