@@ -5,7 +5,7 @@
 #include "func.h"
 #include "optimize.h"
 
-#define MTFUJI_ALT 3.376
+#define MTFUJI_ALT 3.776
 
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     printf("number of iterations = %d\n", iter);
 
     printf("-----\n");
-    printf("Estimated temperature of Mt. Fuji (altitude: 3.376km): %lf\n", MTFUJI_ALT * x[0] + x[1]);
+    printf("Estimated temperature of Mt. Fuji (altitude: 3.776km): %lf\n", MTFUJI_ALT * x[0] + x[1]);
 
     free(x);
 
