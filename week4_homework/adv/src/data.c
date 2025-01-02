@@ -85,3 +85,12 @@ Sample **load_data(const char *filename, int *data_size) {
 
     return samples;
 }
+
+void free_data(int data_size, Sample **samples) {
+    for (int i = 0; i < data_size; ++i) {
+        free(samples[i]->name);
+        free(samples[i]->city);
+        free(samples[i]);
+    }
+    free(samples);
+}
