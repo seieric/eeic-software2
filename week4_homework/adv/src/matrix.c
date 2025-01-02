@@ -32,14 +32,41 @@ Mat *mat_mul(Mat *a, Mat *b) {
 }
 
 Mat *mat_dot(Mat *a, Mat *b) {
-    assert(a->height == b->height && a->width == b->width);
+    assert((a->height == b->height && a->width == b->width) ||
+           (a->height == b->width && a->width == b->height));
+    const int n = a->height * a->width;
+
+    Mat *mat = mat_create(a->height, a->width);
+    if (a->height == b->height) {
+        for (int i = 0; i < n; ++i) {
+            mat->array[i] = a->array[i] * b->array[i];
+        }
+        return mat;
+    } else {
+        for (int i = 0; i < n; ++i) {
+            mat->array[i] =
+                a->array[i] * b->array[i / b->height + i % b->height];
+        }
+        return mat;
+    }
+}
+
+Mat *mat_times_x(Mat *a, double x) {
     const int n = a->height * a->width;
 
     Mat *mat = mat_create(a->height, a->width);
     for (int i = 0; i < n; ++i) {
-        mat->array[i] = a->array[i] * b->array[i];
+        mat->array[i] = a->array[i] * x;
     }
     return mat;
+}
+
+void mat_minus_inplace(Mat *a, Mat *b) {
+    assert(a->height == b->height && a->width == b->width);
+    const int n = a->height * a->width;
+    for (int i = 0; i < n; ++i) {
+        a->array[i] = a->array[i] - b->array[i];
+    }
 }
 
 Mat *mat_create(const int height, const int width) {
@@ -88,6 +115,15 @@ Mat *mat_apply_func(Mat *a, double (*func)(double x)) {
     Mat *mat = mat_create(a->height, a->width);
     for (int i = 0; i < n; ++i) {
         mat->array[i] = func(a->array[i]);
+    }
+    return mat;
+}
+
+Mat *mat_apply_func2(Mat *a, double (*func)(double x, double y), double y) {
+    const int n = a->height * a->width;
+    Mat *mat = mat_create(a->height, a->width);
+    for (int i = 0; i < n; ++i) {
+        mat->array[i] = func(a->array[i], y);
     }
     return mat;
 }
