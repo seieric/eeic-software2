@@ -1,5 +1,3 @@
-#include "train.h"
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +6,7 @@
 #include "criterion.h"
 #include "data.h"
 #include "matrix.h"
+#include "net.h"
 
 #define MAX_EPOCH 200
 #define BATCH_SIZE 5
@@ -90,4 +89,38 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
     mat_destroy(input4x1);
 
     return epoch - 1;
+}
+
+void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
+          double *loss, double *acc) {
+    *loss = 0;
+    *acc = 0;
+    Mat *input4x1 = mat_create(4, 1);
+    const int data_end = data_size + data_index;
+    for (int i = data_index; i < data_end; ++i) {
+        double data[4] = {samples[i]->age, samples[i]->gender,
+                          samples[i]->score, samples[i]->grade};
+        mat_array_init(input4x1, data);
+
+        // 入力層->隠れ層の計算
+        Mat *hidden3x1 = mat_mul(w3x4, input4x1);
+        // 隠れ層のReLU関数の適用
+        mat_apply_func_inplace(hidden3x1, relu);
+
+        // 隠れ層->出力層の計算
+        Mat *output1x1 = mat_mul(w1x3, hidden3x1);
+        // 出力層のSigmoid関数の適用
+        mat_apply_func_inplace(output1x1, sigmoid);
+
+        double out = mat_value(output1x1);
+        *loss += cross_entropy_loss(out, samples[i]->status);
+        double pred = (out > 0.5) ? 1 : 0;
+        *acc += (pred == samples[i]->status) ? 1 : 0;
+
+        mat_destroy(hidden3x1);
+        mat_destroy(output1x1);
+    }
+    *loss /= data_size;  // lossの平均値
+    *acc /= data_size;   // 正解率
+    mat_destroy(input4x1);
 }

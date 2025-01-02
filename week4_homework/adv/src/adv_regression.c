@@ -3,10 +3,11 @@
 
 #include "data.h"
 #include "matrix.h"
-#include "train.h"
+#include "net.h"
 
 #define SEED 1234
 #define LEARNING_RATE 0.001
+#define TEST_DATA_SIZE 20  // テスト用データの件数（学習には使わない）
 
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
@@ -52,9 +53,26 @@ int main(int argc, char *argv[]) {
     printf("learning rate: %lf\n", lr);
 
     // モデルのトレーニング（重みの最適化）
-    int last_epoch = train(lr, 0, 0, w3x4, w1x3, data_size, samples);
+    int last_epoch =
+        train(lr, 0, 0, w3x4, w1x3, data_size - TEST_DATA_SIZE, samples);
 
     printf("last epoch: %d\n", last_epoch);
+
+    // モデルのテスト
+    double eval_loss, eval_acc;
+    eval(w3x4, w1x3, TEST_DATA_SIZE, data_size - TEST_DATA_SIZE, samples, &eval_loss, &eval_acc);
+
+    printf("----------\n");
+    // トレーニング後のの重みを表示
+    printf("trained weights:\nmatrix w3x4:\n");
+    mat_print(w3x4);
+    printf("matrix w1x3:\n");
+    mat_print(w1x3);
+
+    printf("----------\n");
+    // テスト結果を表示
+    printf("eval loss: %lf\n", eval_loss);
+    printf("eval accuracy: %lf\n", eval_acc);
 
     // 重み行列を開放
     mat_destroy(w3x4);
