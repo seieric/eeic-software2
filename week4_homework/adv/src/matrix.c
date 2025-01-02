@@ -31,6 +31,17 @@ Mat *mat_mul(Mat *a, Mat *b) {
     return mat;
 }
 
+Mat *mat_dot(Mat *a, Mat *b) {
+    assert(a->height == b->height && a->width == b->width);
+    const int n = a->height * a->width;
+
+    Mat *mat = mat_create(a->height, a->width);
+    for (int i = 0; i < n; ++i) {
+        mat->array[i] = a->array[i] * b->array[i];
+    }
+    return mat;
+}
+
 Mat *mat_create(const int height, const int width) {
     Mat *mat = (Mat *)malloc(sizeof(Mat));
     double *array = (double *)malloc(height * width * sizeof(double));
