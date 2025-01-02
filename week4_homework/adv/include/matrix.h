@@ -13,7 +13,10 @@ void mat_he_init(Mat *a);
 void mat_array_init(Mat *a, double *array);
 
 // 各要素への関数適用
-void mat_apply_func(Mat *a, double (*func)(double x));
+Mat *mat_apply_func(Mat *a, double (*func)(double x));
+void mat_apply_func_inplace(
+    Mat *a,
+    double (*func)(double x));  // 引数の行列を書き換える
 
 // 1x1行列の値
 double mat_value(Mat *a);

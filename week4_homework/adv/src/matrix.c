@@ -83,7 +83,16 @@ void mat_array_init(Mat *a, double *array) {
     }
 }
 
-void mat_apply_func(Mat *a, double (*func)(double x)) {
+Mat *mat_apply_func(Mat *a, double (*func)(double x)) {
+    const int n = a->height * a->width;
+    Mat *mat = mat_create(a->height, a->width);
+    for (int i = 0; i < n; ++i) {
+        mat->array[i] = func(a->array[i]);
+    }
+    return mat;
+}
+
+void mat_apply_func_inplace(Mat *a, double (*func)(double x)) {
     const int n = a->height * a->width;
     for (int i = 0; i < n; ++i) {
         a->array[i] = func(a->array[i]);
