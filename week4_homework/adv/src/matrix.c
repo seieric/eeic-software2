@@ -65,7 +65,7 @@ void mat_he_init(Mat *a) {
     }
 }
 
-void mat_array_init(Mat *a, double array[]) {
+void mat_array_init(Mat *a, double *array) {
     const int n = a->height * a->width;
     for (int i = 0; i < n; ++i) {
         a->array[i] = array[i];
