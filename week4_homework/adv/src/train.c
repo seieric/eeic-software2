@@ -9,7 +9,7 @@
 #include "data.h"
 #include "matrix.h"
 
-#define MAX_EPOCH 10000
+#define MAX_EPOCH 2
 #define BATCH_SIZE 5
 
 double calc_norm(const int dim, double v[]) {
@@ -24,22 +24,25 @@ double calc_norm(const int dim, double v[]) {
 int train(const double alpha, const int dim, Mat *w3x4, Mat *w1x3,
           int data_size, Sample **samples) {
     int epoch = 0;
-    const int total_batch = data_size / BATCH_SIZE + 1;
+    const int total_batch = ceil(data_size * 1.0 / BATCH_SIZE);
     Mat *input4x1 = mat_create(4, 1);
     Mat *hidden3x1;
     while (++epoch < MAX_EPOCH) {
         // 各エポックの処理
-        for (int batch = 0; batch < total_batch; ++batch) {
+        int batch = 0;
+        while (++batch < total_batch) {
             // 各バッチの処理
             double loss = 0;
             for (int i = 0; i < BATCH_SIZE; ++i) {
+                const int data_id = (batch - 1) * BATCH_SIZE + i;
                 // 最終バッチはデータがなくなったら終了
-                if (batch * BATCH_SIZE + i >= data_size) break;
+                if (data_id >= data_size) break;
 
                 // forward
                 // 入力行列
-                double data[4] = {samples[i]->age, samples[i]->gender,
-                                  samples[i]->score, samples[i]->grade};
+                double data[4] = {
+                    samples[data_id]->age, samples[data_id]->gender,
+                    samples[data_id]->score, samples[data_id]->grade};
                 mat_array_init(input4x1, data);
 
                 // 入力層->隠れ層の計算
@@ -54,12 +57,12 @@ int train(const double alpha, const int dim, Mat *w3x4, Mat *w1x3,
 
                 // lossの計算
                 loss += cross_entropy_loss(mat_value(output1x1),
-                                           samples[i]->status);
+                                           samples[data_id]->status);
             }
             // logging
             printf("epoch: %d, batch: %d, loss: %lf\n", epoch, batch, loss);
         }
     }
 
-    return epoch;
+    return epoch - 1;
 }
