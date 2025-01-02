@@ -7,7 +7,7 @@ SRCDIR = ./src
 CFLAGS = -Wall -I$(INCLUDE) 
 LDFLAGS = -lm
 
-OBJS = $(SRCDIR)/adv_regression.o $(SRCDIR)/matrix.o $(SRCDIR)/activation.o $(SRCDIR)/data.o $(SRCDIR)/criterion.o
+OBJS = $(SRCDIR)/adv_regression.o $(SRCDIR)/matrix.o $(SRCDIR)/activation.o $(SRCDIR)/data.o $(SRCDIR)/criterion.o $(SRCDIR)/train.o
 
 TARGET = $(BINDIR)/nn
 

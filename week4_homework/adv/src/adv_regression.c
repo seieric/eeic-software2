@@ -2,6 +2,7 @@
 
 #include "data.h"
 #include "matrix.h"
+#include "train.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
@@ -26,21 +27,28 @@ int main(int argc, char *argv[]) {
     }
     printf("|----------|---|------|------|------|------------|------|\n");
 
+    printf("data size: %d\n\n", data_size);
+
     // 入力層4, 隠れ層3, 出力層1のニューラルネットワークの重み行列を作成
-    Mat *w4x3 = mat_create(4, 3);
-    Mat *w3x1 = mat_create(3, 1);
-    mat_he_init(w4x3);
-    mat_he_init(w3x1);
+    Mat *w3x4 = mat_create(3, 4);
+    Mat *w1x3 = mat_create(1, 3);
+    mat_he_init(w3x4);
+    mat_he_init(w1x3);
 
     // 初期状態の重みを表示
-    printf("Matrix w4x3:\n");
-    mat_print(w4x3);
-    printf("Matrix w3x1:\n");
-    mat_print(w3x1);
+    printf("initial weights:\nmatrix w3x4:\n");
+    mat_print(w3x4);
+    printf("matrix w1x3:\n");
+    mat_print(w1x3);
+
+    // モデルのトレーニング（重みの最適化）
+    int last_epoch = train(0, 0, w3x4, w1x3, data_size, samples);
+
+    printf("last epoch: %d\n", last_epoch);
 
     // 重み行列を開放
-    mat_destroy(w4x3);
-    mat_destroy(w3x1);
+    mat_destroy(w3x4);
+    mat_destroy(w1x3);
 
     free_data(data_size, samples);
 
