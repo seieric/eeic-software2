@@ -6,6 +6,7 @@
 #include "train.h"
 
 #define SEED 1234
+#define LEARNING_RATE 0.001
 
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
@@ -46,8 +47,12 @@ int main(int argc, char *argv[]) {
     printf("matrix w1x3:\n");
     mat_print(w1x3);
 
+    // 学習率
+    const double lr = LEARNING_RATE;
+    printf("learning rate: %lf\n", lr);
+
     // モデルのトレーニング（重みの最適化）
-    int last_epoch = train(0, 0, w3x4, w1x3, data_size, samples);
+    int last_epoch = train(lr, 0, 0, w3x4, w1x3, data_size, samples);
 
     printf("last epoch: %d\n", last_epoch);
 

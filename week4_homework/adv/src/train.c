@@ -12,21 +12,11 @@
 #define MAX_EPOCH 2
 #define BATCH_SIZE 5
 
-double calc_norm(const int dim, double v[]) {
-    double tmp = 0;
-    for (int i = 0; i < dim; i++) {
-        tmp += v[i] * v[i];
-    }
-    tmp = sqrt(tmp);
-    return tmp;
-}
-
-int train(const double alpha, const int dim, Mat *w3x4, Mat *w1x3,
-          int data_size, Sample **samples) {
+int train(const double lr, const double alpha, const int dim, Mat *w3x4,
+          Mat *w1x3, int data_size, Sample **samples) {
     int epoch = 0;
     const int total_batch = ceil(data_size * 1.0 / BATCH_SIZE);
     Mat *input4x1 = mat_create(4, 1);
-    Mat *hidden3x1;
     while (++epoch < MAX_EPOCH) {
         // 各エポックの処理
         int batch = 0;
@@ -46,7 +36,7 @@ int train(const double alpha, const int dim, Mat *w3x4, Mat *w1x3,
                 mat_array_init(input4x1, data);
 
                 // 入力層->隠れ層の計算
-                hidden3x1 = mat_mul(w3x4, input4x1);
+                Mat *hidden3x1 = mat_mul(w3x4, input4x1);
                 // 隠れ層のReLU関数の適用
                 mat_apply_func(hidden3x1, relu);
 
