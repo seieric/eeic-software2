@@ -1,9 +1,9 @@
 #include "matrix.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 #define PI 3.14159265358979323846
 
@@ -63,4 +63,23 @@ void mat_he_init(Mat *a) {
         double u2 = rand() * 1.0 / RAND_MAX;
         a->array[i] = sqrt(-2 * log(u1)) * cos(2 * PI * u2) * stddev;
     }
+}
+
+void mat_array_init(Mat *a, double array[]) {
+    const int n = a->height * a->width;
+    for (int i = 0; i < n; ++i) {
+        a->array[i] = array[i];
+    }
+}
+
+void mat_apply_func(Mat *a, double (*func)(double x)) {
+    const int n = a->height * a->width;
+    for (int i = 0; i < n; ++i) {
+        a->array[i] = func(a->array[i]);
+    }
+}
+
+double mat_value(Mat *a) {
+    assert(a->height == 1 && a->width == 1);
+    return a->array[0];
 }

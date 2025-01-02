@@ -9,3 +9,10 @@ void mat_print(Mat *a);
 
 // 初期化
 void mat_he_init(Mat *a);
+void mat_array_init(Mat *a, double array[]);
+
+// 各要素への関数適用
+void mat_apply_func(Mat *a, double (*func)(double x));
+
+// 1x1行列の値
+double mat_value(Mat *a);
