@@ -38,8 +38,8 @@ int train(const double alpha, const int dim, Mat *w3x4, Mat *w1x3,
 
                 // forward
                 // 入力行列
-                const double data[4] = {samples[i]->age, samples[i]->gender,
-                                        samples[i]->score, samples[i]->grade};
+                double data[4] = {samples[i]->age, samples[i]->gender,
+                                  samples[i]->score, samples[i]->grade};
                 mat_array_init(input4x1, data);
 
                 // 入力層->隠れ層の計算
