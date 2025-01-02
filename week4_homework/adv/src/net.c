@@ -9,9 +9,9 @@
 #include "data.h"
 #include "matrix.h"
 
-#define MAX_EPOCH 20
+#define MAX_EPOCH 200
 #define BATCH_SIZE 5
-#define BATCH_LOG_INTERVAL 10
+#define BATCH_LOG_INTERVAL 200  // バッチごとのloggingを無効化
 
 int train(const double lr, const double alpha, const int dim, Mat *w3x4,
           Mat *w1x3, int data_size, Sample **samples) {
