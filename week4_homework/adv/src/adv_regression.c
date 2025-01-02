@@ -1,14 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "data.h"
 #include "matrix.h"
 #include "train.h"
+
+#define SEED 1234
 
 int main(int argc, char *argv[]) {
     if (argc != 2 && argc != 3) {
         printf("usage: %s <csv file> <alpha>\n", argv[0]);
         return 1;
     }
+
+    srand(SEED);
 
     int data_size;
     Sample **samples = load_data(argv[1], &data_size);
