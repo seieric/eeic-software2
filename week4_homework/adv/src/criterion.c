@@ -1,6 +1,7 @@
 #include "criterion.h"
 
 #include <math.h>
+#include <assert.h>
 
 double cross_entropy_loss(double pred, double ans) {
     assert(0 < pred && pred < 1);
