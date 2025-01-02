@@ -1,3 +1,5 @@
+// 行列計算
+#pragma once
 typedef struct mat Mat;
 
 Mat *mat_mul(Mat *a, Mat *b);

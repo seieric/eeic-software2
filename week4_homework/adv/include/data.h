@@ -1,3 +1,4 @@
+// CSVデータ読み込み・開放
 #pragma once
 typedef struct {
     char *name;     // Name
