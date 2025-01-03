@@ -33,8 +33,8 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 // forward
                 // 入力行列
                 double data[4] = {
-                    samples[data_id]->age, samples[data_id]->gender,
-                    samples[data_id]->score, samples[data_id]->grade};
+                    samples[data_id]->age / 25, samples[data_id]->gender,
+                    samples[data_id]->score / 100, samples[data_id]->grade / 100};
                 mat_array_init(input4x1, data);
 
                 // 入力層->隠れ層の計算
@@ -100,6 +100,10 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
         printf("epoch: %d, loss: %lf\n", epoch, epoch_loss / data_size);
     }
 
+    // 最終エポックの評価
+    double loss, acc;
+    eval(w3x4, w1x3, data_size, 0, samples, &loss, &acc);
+
     mat_destroy(input4x1);
 
     return epoch - 1;
@@ -116,8 +120,8 @@ void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
     printf("|---|------|------|------|------|----------|\n");
 
     for (int i = data_index; i < data_end; ++i) {
-        double data[4] = {samples[i]->age, samples[i]->gender,
-                          samples[i]->score, samples[i]->grade};
+        double data[4] = {samples[i]->age / 25, samples[i]->gender,
+                          samples[i]->score / 100, samples[i]->grade / 100};
         mat_array_init(input4x1, data);
 
         // 入力層->隠れ層の計算
@@ -132,15 +136,15 @@ void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
 
         double out = mat_value(output1x1);
         *loss += cross_entropy_loss(out, samples[i]->status);
-        double pred = (out > 0.5) ? 1 : 0;
+        double pred = (out >= 0.5) ? 1 : 0;
         *acc += (pred == samples[i]->status) ? 1 : 0;
 
         mat_destroy(hidden3x1);
         mat_destroy(output1x1);
 
-        printf("|%3.0lf|%6.0lf|%6.2lf|%6.2lf|%6.0lf|%10.0f|\n", samples[i]->age,
+        printf("|%3.0lf|%6.0lf|%6.2lf|%6.2lf|%6.0lf|%10.4f|\n", samples[i]->age,
                samples[i]->gender, samples[i]->score, samples[i]->grade,
-               samples[i]->status, pred);
+               samples[i]->status, out);
     }
     printf("|---|------|------|------|------|----------|\n");
 
