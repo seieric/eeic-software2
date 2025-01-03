@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    shuffle_data(data_size, samples);
+
     printf("|Name      |Age|Gender|Score |Grade |City        |Status|\n");
     printf("|----------|---|------|------|------|------------|------|\n");
     for (int i = 0; i < data_size; ++i) {
