@@ -44,8 +44,10 @@ Mat *mat_dot(Mat *a, Mat *b) {
         return mat;
     } else {
         for (int i = 0; i < n; ++i) {
+            const int r = i / a->height;
+            const int c = i % a->height;
             mat->array[i] =
-                a->array[i] * b->array[i / b->height + i % b->height];
+                a->array[i] * b->array[c * b->width + r];
         }
         return mat;
     }
