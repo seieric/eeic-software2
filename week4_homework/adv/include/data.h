@@ -12,3 +12,4 @@ typedef struct {
 
 Sample **load_data(const char *filename, int *data_size);
 void free_data(int data_size, Sample **samples);
+void shuffle_data(int data_size, Sample **samples);

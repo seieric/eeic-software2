@@ -95,3 +95,12 @@ void free_data(int data_size, Sample **samples) {
     }
     free(samples);
 }
+
+void shuffle_data(int data_size, Sample **samples) {
+    for (int i = 0; i < data_size; ++i) {
+        int j = rand() % data_size;
+        Sample *tmp = samples[i];
+        samples[i] = samples[j];
+        samples[j] = tmp;
+    }
+}
