@@ -34,6 +34,8 @@
 - 目的関数：交差エントロピー誤差
 - データ：[Student Admission Records](https://www.kaggle.com/datasets/zeeshier/student-admission-records)
   - Kaggleからダウンロードしたデータを`adv/data/student_admission_record_dirty.csv`に同梱している。
+  - 年齢、性別、試験の点数、高校の成績、合否の項目のみを利用している。
+    - これらの項目が欠損している行は読み込み時に除外する仕組みになっている。
 
 #### 実装の詳細
 
