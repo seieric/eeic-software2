@@ -6,7 +6,7 @@
 #include "net.h"
 
 #define SEED 1234
-#define LEARNING_RATE 0.001
+#define LEARNING_RATE 0.0001
 #define TEST_DATA_SIZE 20  // テスト用データの件数（学習には使わない）
 
 int main(int argc, char *argv[]) {

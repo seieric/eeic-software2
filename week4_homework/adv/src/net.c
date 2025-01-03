@@ -1,3 +1,5 @@
+#include "net.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +8,6 @@
 #include "criterion.h"
 #include "data.h"
 #include "matrix.h"
-#include "net.h"
 
 #define MAX_EPOCH 200
 #define BATCH_SIZE 5
@@ -39,42 +40,55 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 // 入力層->隠れ層の計算
                 Mat *hidden3x1 = mat_mul(w3x4, input4x1);
                 // 隠れ層のReLU関数の適用
-                mat_apply_func_inplace(hidden3x1, relu);
+                Mat *hidden3x1_relu = mat_apply_func(hidden3x1, relu);
 
                 // 隠れ層->出力層の計算
-                Mat *output1x1 = mat_mul(w1x3, hidden3x1);
+                Mat *output1x1 = mat_mul(w1x3, hidden3x1_relu);
                 // 出力層のSigmoid関数の適用
-                mat_apply_func_inplace(output1x1, sigmoid);
+                Mat *output1x1_sigmoid = mat_apply_func(output1x1, sigmoid);
 
                 // lossの計算
-                batch_loss += cross_entropy_loss(mat_value(output1x1),
+                batch_loss += cross_entropy_loss(mat_value(output1x1_sigmoid),
                                                  samples[data_id]->status);
 
                 // backforward
                 // w1x3の更新
                 // grad = d(loss)/d(sigmoid) * d(sigmod)/d(in) * d(in)/dw
-                Mat *sigmoid_grad1x3_x = mat_dot(w1x3, hidden3x1);
-                Mat *sigmoid_grad1x3 =
-                    mat_apply_func(sigmoid_grad1x3_x, dsigmoid_dx);
-                Mat *grad1x3_ = mat_dot(sigmoid_grad1x3, hidden3x1);
-                Mat *cse_grad1x3_x = mat_apply_func(sigmoid_grad1x3_x, sigmoid);
-                Mat *cse_grad1x3 =
-                    mat_apply_func2(cse_grad1x3_x, dcross_entropy_loss_dpred,
-                                    samples[data_id]->status);
-                Mat *grad1x3 = mat_dot(cse_grad1x3, grad1x3_);
+                Mat *cse_grad1x1 = mat_apply_func2(output1x1_sigmoid,
+                                                   dcross_entropy_loss_dpred,
+                                                   samples[data_id]->status);
+                Mat *sigmoid_grad1x1 = mat_apply_func(output1x1, dsigmoid_dx);
+                double coef =
+                    mat_value(cse_grad1x1) * mat_value(sigmoid_grad1x1);
+
+                // w3x4の更新
+                Mat *relu_grad3x1 = mat_apply_func(hidden3x1, drelu_dx);
+                Mat *w_dot_relu1x3 = mat_dot(w1x3, relu_grad3x1);
+                Mat *w_dot_relu3x1 = mat_transpose(w_dot_relu1x3);
+                Mat *input1x4 = mat_transpose(input4x1);
+                Mat *tmp3x4 = mat_mul(w_dot_relu3x1, input1x4);
+
                 // 最急降下法で更新
-                Mat *diff1x3 = mat_times_x(grad1x3, lr);
+                Mat *diff3x1 = mat_times_x(hidden3x1_relu, coef * lr);
+                Mat *diff1x3 = mat_transpose(diff3x1);
                 mat_minus_inplace(w1x3, diff1x3);
+                Mat *diff3x4 = mat_times_x(tmp3x4, coef * lr);
+                mat_minus_inplace(w3x4, diff3x4);
 
                 mat_destroy(hidden3x1);
+                mat_destroy(hidden3x1_relu);
                 mat_destroy(output1x1);
-                mat_destroy(sigmoid_grad1x3_x);
-                mat_destroy(sigmoid_grad1x3);
-                mat_destroy(grad1x3_);
-                mat_destroy(cse_grad1x3_x);
-                mat_destroy(cse_grad1x3);
-                mat_destroy(grad1x3);
+                mat_destroy(output1x1_sigmoid);
+                mat_destroy(cse_grad1x1);
+                mat_destroy(sigmoid_grad1x1);
+                mat_destroy(relu_grad3x1);
+                mat_destroy(w_dot_relu1x3);
+                mat_destroy(w_dot_relu3x1);
+                mat_destroy(input1x4);
+                mat_destroy(tmp3x4);
+                mat_destroy(diff3x1);
                 mat_destroy(diff1x3);
+                mat_destroy(diff3x4);
             }
             epoch_loss += batch_loss;
             // logging
@@ -97,6 +111,10 @@ void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
     *acc = 0;
     Mat *input4x1 = mat_create(4, 1);
     const int data_end = data_size + data_index;
+
+    printf("|Age|Gender|Score |Grade |Status|Prediction|\n");
+    printf("|---|------|------|------|------|----------|\n");
+
     for (int i = data_index; i < data_end; ++i) {
         double data[4] = {samples[i]->age, samples[i]->gender,
                           samples[i]->score, samples[i]->grade};
@@ -119,7 +137,13 @@ void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
 
         mat_destroy(hidden3x1);
         mat_destroy(output1x1);
+
+        printf("|%3.0lf|%6.0lf|%6.2lf|%6.2lf|%6.0lf|%10.0f|\n", samples[i]->age,
+               samples[i]->gender, samples[i]->score, samples[i]->grade,
+               samples[i]->status, pred);
     }
+    printf("|---|------|------|------|------|----------|\n");
+
     *loss /= data_size;  // lossの平均値
     *acc /= data_size;   // 正解率
     mat_destroy(input4x1);

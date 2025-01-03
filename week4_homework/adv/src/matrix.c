@@ -139,3 +139,14 @@ double mat_value(Mat *a) {
     assert(a->height == 1 && a->width == 1);
     return a->array[0];
 }
+
+Mat *mat_transpose(Mat *a) {
+    const int n = a->height * a->width;
+    Mat *mat = mat_create(a->width, a->height);
+    for (int i = 0; i < n; ++i) {
+        const int r = i / a->height;
+        const int c = i % a->height;
+        mat->array[c * a->width + r] = a->array[i];
+    }
+    return mat;
+}

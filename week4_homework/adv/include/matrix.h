@@ -23,3 +23,6 @@ Mat *mat_apply_func2(Mat *a, double (*func)(double x, double y), double y);
 
 // 1x1行列の値
 double mat_value(Mat *a);
+
+// 転置
+Mat *mat_transpose(Mat *a);
