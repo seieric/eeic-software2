@@ -68,6 +68,7 @@ Sample **load_data(const char *filename, int *data_size) {
         // 年齢
         if (sample->age < 0) {
             printf("skipping: invalid age\n");
+            is_error = true;
         }
 
         if (is_error) {
