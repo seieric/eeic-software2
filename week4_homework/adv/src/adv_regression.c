@@ -63,15 +63,15 @@ int main(int argc, char *argv[]) {
     printf("learning rate: %lf\n", lr);
 
     // モデルのトレーニング（重みの最適化）
-    int last_epoch = train(lr, 0.94, 0, w3x4, w1x3, b3x1, b1x1,
+    int last_epoch = train(lr, 0.59, 0, w3x4, w1x3, b3x1, b1x1,
                            data_size - TEST_DATA_SIZE, samples);
 
     printf("last epoch: %d\n", last_epoch);
 
     // モデルのテスト
     double eval_loss, eval_acc;
-    eval(w3x4, w1x3, TEST_DATA_SIZE, data_size - TEST_DATA_SIZE, samples,
-         &eval_loss, &eval_acc);
+    eval(w3x4, w1x3, b3x1, b1x1, TEST_DATA_SIZE, data_size - TEST_DATA_SIZE,
+         samples, &eval_loss, &eval_acc);
 
     printf("----------\n");
     // トレーニング後のの重みを表示
