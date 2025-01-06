@@ -10,7 +10,7 @@
 #include "matrix.h"
 
 #define MAX_EPOCH 2000
-#define SAMPLE_SIZE 50
+#define SAMPLE_SIZE 20
 
 int train(const double lr, const double alpha, const int dim, Mat *w3x4,
           Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size, Sample **samples) {
@@ -96,6 +96,7 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
     // 最終エポックの評価
     double loss, acc;
     eval(w3x4, w1x3, b3x1, b1x1, data_size, 0, samples, &loss, &acc);
+    printf("final loss: %lf, final accuracy: %lf\n", loss, acc);
 
     mat_destroy(input4x1);
 
@@ -111,6 +112,10 @@ void eval(Mat *w3x4, Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size,
 
     printf("|Age|Gender|Score |Grade |Status|Prediction|\n");
     printf("|---|------|------|------|------|----------|\n");
+
+    // 混同行列用の配列
+    // TP, FP, FN, TN
+    int confusion_array[4] = {0, 0, 0, 0};
 
     for (int i = data_index; i < data_end; ++i) {
         double data[4] = {samples[i]->age, samples[i]->gender,
@@ -137,11 +142,29 @@ void eval(Mat *w3x4, Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size,
         mat_destroy(hidden3x1);
         mat_destroy(output1x1);
 
+        if (pred == 1) {
+            if (samples[i]->status == 1) {
+                ++confusion_array[0];
+            } else {
+                ++confusion_array[1];
+            }
+        } else {
+            if (samples[i]->status == 1) {
+                ++confusion_array[2];
+            } else {
+                ++confusion_array[3];
+            }
+        }
+
         printf("|%3.0lf|%6.0lf|%6.2lf|%6.2lf|%6.0lf|%10.4f|\n", samples[i]->age,
                samples[i]->gender, samples[i]->score, samples[i]->grade,
                samples[i]->status, out);
     }
     printf("|---|------|------|------|------|----------|\n");
+
+    printf("confusion matrix:\n");
+    printf("|TP:%d|FP:%d|\n", confusion_array[0], confusion_array[1]);
+    printf("|FN:%d|TN:%d|\n", confusion_array[2], confusion_array[3]);
 
     *loss /= data_size;  // lossの平均値
     *acc /= data_size;   // 正解率
