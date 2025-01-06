@@ -63,6 +63,14 @@ Mat *mat_times_x(Mat *a, double x) {
     return mat;
 }
 
+void mat_plus_inplace(Mat *a, Mat *b) {
+    assert(a->height == b->height && a->width == b->width);
+    const int n = a->height * a->width;
+    for (int i = 0; i < n; ++i) {
+        a->array[i] = a->array[i] + b->array[i];
+    }
+}
+
 void mat_minus_inplace(Mat *a, Mat *b) {
     assert(a->height == b->height && a->width == b->width);
     const int n = a->height * a->width;

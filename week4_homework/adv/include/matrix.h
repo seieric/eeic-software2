@@ -5,6 +5,7 @@ typedef struct mat Mat;
 Mat *mat_mul(Mat *a, Mat *b);
 Mat *mat_dot(Mat *a, Mat *b);
 Mat *mat_times_x(Mat *a, double x);
+void mat_plus_inplace(Mat *a, Mat *b);
 void mat_minus_inplace(Mat *a, Mat *b);
 Mat *mat_create(const int height, const int width);
 void mat_destroy(Mat *a);

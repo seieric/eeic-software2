@@ -14,7 +14,7 @@
 #define BATCH_LOG_INTERVAL 200  // バッチごとのloggingを無効化
 
 int train(const double lr, const double alpha, const int dim, Mat *w3x4,
-          Mat *w1x3, int data_size, Sample **samples) {
+          Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size, Sample **samples) {
     int epoch = 0;
     const int total_batch = ceil(data_size * 1.0 / BATCH_SIZE);
     Mat *input4x1 = mat_create(4, 1);
@@ -39,11 +39,13 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
 
                 // 入力層->隠れ層の計算
                 Mat *hidden3x1 = mat_mul(w3x4, input4x1);
+                mat_plus_inplace(hidden3x1, b3x1);
                 // 隠れ層のReLU関数の適用
                 Mat *hidden3x1_relu = mat_apply_func(hidden3x1, relu);
 
                 // 隠れ層->出力層の計算
                 Mat *output1x1 = mat_mul(w1x3, hidden3x1_relu);
+                mat_plus_inplace(output1x1, b1x1);
                 // 出力層のSigmoid関数の適用
                 Mat *output1x1_sigmoid = mat_apply_func(output1x1, sigmoid);
 
@@ -69,6 +71,10 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 Mat *tmp3x4 = mat_mul(w_dot_relu3x1, input1x4);
 
                 // 最急降下法で更新
+                Mat * bdiff1x1 = mat_times_x(cse_grad1x1, coef * lr);
+                mat_minus_inplace(b1x1, bdiff1x1);
+                Mat * bdiff3x1 = mat_times_x(w_dot_relu3x1, coef * lr);
+                mat_minus_inplace(b3x1, bdiff3x1);
                 Mat *diff3x1 = mat_times_x(hidden3x1_relu, coef * lr);
                 Mat *diff1x3 = mat_transpose(diff3x1);
                 mat_minus_inplace(w1x3, diff1x3);
@@ -86,6 +92,8 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 mat_destroy(w_dot_relu3x1);
                 mat_destroy(input1x4);
                 mat_destroy(tmp3x4);
+                mat_destroy(bdiff1x1);
+                mat_destroy(bdiff3x1);
                 mat_destroy(diff3x1);
                 mat_destroy(diff1x3);
                 mat_destroy(diff3x4);
@@ -98,6 +106,7 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
             }
         }
         printf("epoch: %d, loss: %lf\n", epoch, epoch_loss / data_size);
+        if (epoch_loss / data_size < alpha) break;
     }
 
     // 最終エポックの評価

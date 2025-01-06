@@ -44,6 +44,12 @@ int main(int argc, char *argv[]) {
     mat_he_init(w3x4);
     mat_he_init(w1x3);
 
+    // バイアス行列を作成
+    Mat *b3x1 = mat_create(3, 1);
+    Mat *b1x1 = mat_create(1, 1);
+    mat_array_init(b3x1, (double[]){0, 0, 0});
+    mat_array_init(b1x1, (double[]){0});
+
     // 初期状態の重みを表示
     printf("initial weights:\nmatrix w3x4:\n");
     mat_print(w3x4);
@@ -56,7 +62,7 @@ int main(int argc, char *argv[]) {
 
     // モデルのトレーニング（重みの最適化）
     int last_epoch =
-        train(lr, 0, 0, w3x4, w1x3, data_size - TEST_DATA_SIZE, samples);
+        train(lr, 0.94, 0, w3x4, w1x3, b3x1, b1x1, data_size - TEST_DATA_SIZE, samples);
 
     printf("last epoch: %d\n", last_epoch);
 
@@ -70,6 +76,10 @@ int main(int argc, char *argv[]) {
     mat_print(w3x4);
     printf("matrix w1x3:\n");
     mat_print(w1x3);
+    printf("bias b3x1:\n");
+    mat_print(b3x1);
+    printf("bias b1x1:\n");
+    mat_print(b1x1);
 
     printf("----------\n");
     // テスト結果を表示
