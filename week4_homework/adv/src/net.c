@@ -33,8 +33,8 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 // forward
                 // 入力行列
                 double data[4] = {
-                    samples[data_id]->age / 25, samples[data_id]->gender,
-                    samples[data_id]->score / 100, samples[data_id]->grade / 100};
+                    samples[data_id]->age, samples[data_id]->gender,
+                    samples[data_id]->score, samples[data_id]->grade};
                 mat_array_init(input4x1, data);
 
                 // 入力層->隠れ層の計算
@@ -71,9 +71,9 @@ int train(const double lr, const double alpha, const int dim, Mat *w3x4,
                 Mat *tmp3x4 = mat_mul(w_dot_relu3x1, input1x4);
 
                 // 最急降下法で更新
-                Mat * bdiff1x1 = mat_times_x(cse_grad1x1, coef * lr);
+                Mat *bdiff1x1 = mat_times_x(cse_grad1x1, coef * lr);
                 mat_minus_inplace(b1x1, bdiff1x1);
-                Mat * bdiff3x1 = mat_times_x(w_dot_relu3x1, coef * lr);
+                Mat *bdiff3x1 = mat_times_x(w_dot_relu3x1, coef * lr);
                 mat_minus_inplace(b3x1, bdiff3x1);
                 Mat *diff3x1 = mat_times_x(hidden3x1_relu, coef * lr);
                 Mat *diff1x3 = mat_transpose(diff3x1);
@@ -129,8 +129,8 @@ void eval(Mat *w3x4, Mat *w1x3, int data_size, int data_index, Sample **samples,
     printf("|---|------|------|------|------|----------|\n");
 
     for (int i = data_index; i < data_end; ++i) {
-        double data[4] = {samples[i]->age / 25, samples[i]->gender,
-                          samples[i]->score / 100, samples[i]->grade / 100};
+        double data[4] = {samples[i]->age, samples[i]->gender,
+                          samples[i]->score, samples[i]->grade};
         mat_array_init(input4x1, data);
 
         // 入力層->隠れ層の計算

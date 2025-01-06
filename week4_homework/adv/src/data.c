@@ -1,5 +1,6 @@
 #include "data.h"
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -102,5 +103,38 @@ void shuffle_data(int data_size, Sample **samples) {
         Sample *tmp = samples[i];
         samples[i] = samples[j];
         samples[j] = tmp;
+    }
+}
+
+void normalize_data(int data_size, Sample **samples) {
+    // 平均値
+    double sum_age = 0, sum_score = 0, sum_grade = 0;
+    for (int i = 0; i < data_size; ++i) {
+        sum_age += samples[i]->age;
+        sum_score += samples[i]->score;
+        sum_grade += samples[i]->grade;
+    }
+    double avg_age = sum_age / data_size;
+    double avg_score = sum_score / data_size;
+    double avg_grade = sum_grade / data_size;
+
+    // 標準偏差
+    double sd_age = 0, sd_score = 0, sd_grade = 0;
+    for (int i = 0; i < data_size; ++i) {
+        sd_age += (samples[i]->age - avg_age) * (samples[i]->age - avg_age);
+        sd_score +=
+            (samples[i]->score - avg_score) * (samples[i]->score - avg_score);
+        sd_grade +=
+            (samples[i]->grade - avg_grade) * (samples[i]->grade - avg_grade);
+    }
+    sd_age = sqrt(sd_age / data_size);
+    sd_score = sqrt(sd_score / data_size);
+    sd_grade = sqrt(sd_grade / data_size);
+
+    // N[0, 1]にする
+    for (int i = 0; i < data_size; ++i) {
+        samples[i]->age = (samples[i]->age - avg_age) / sd_age;
+        samples[i]->score = (samples[i]->score - avg_score) / sd_score;
+        samples[i]->grade = (samples[i]->grade - avg_grade) / sd_grade;
     }
 }
