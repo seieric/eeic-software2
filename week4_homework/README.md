@@ -55,6 +55,9 @@
   - 行列積および行列への活性化関数の適用。
 - 逆伝播の実装
   - 誤差逆伝播法を用いて、勾配を計算し、最急降下法によって重みを更新する。
+- データの前処理
+  - 性別、試験の点数、高校の成績の3つの項目はネットワークに入力される前に標準化される。
+  - テストデータも含めて全てのデータの平均と標準偏差を用いて標準化を行っている。
 
 ## 参考にしたサイト
 
@@ -69,3 +72,4 @@
 - https://nisshingeppo.com/ai/relu-funcrion/
 - https://www.gavo.t.u-tokyo.ac.jp/~dsk_saito/lecture/software2/resource/lecture2.html#section-8
 - https://qiita.com/Fumio-eisan/items/d697fbd96347ef7e49d5
+- https://qiita.com/yShig/items/dbeb98598abcc98e1a57
