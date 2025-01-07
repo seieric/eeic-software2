@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "city.h"
 #include "map.h"
@@ -13,6 +14,8 @@
 double solve(const City *city, int n, int *route, int *visited) {
     // 複数の初期解に対して探索を行う
     double best_sum_d = INFINITY;
+    // 解の保存場所
+    int *final_route = (int *)malloc(sizeof(int) * n);
     for (int a_id = 0; a_id < NUM_INIT_ANS; ++a_id) {
         // 以下はとりあえずダミー。ここに探索プログラムを実装する
         // 現状は町の番号順のルートを回っているだけ
@@ -38,8 +41,12 @@ double solve(const City *city, int n, int *route, int *visited) {
         printf("a_id = %d: sum_d = %f\n", a_id, sum_d);
         if (sum_d < best_sum_d) {
             best_sum_d = sum_d;
+            memcpy(final_route, route, sizeof(int) * n);
         }
     }
+
+    memcpy(route, final_route, sizeof(int) * n);
+    free(final_route);
 
     return best_sum_d;
 }
@@ -65,6 +72,11 @@ double search(const City *city, int n, int *route, int *visited) {
                 next[1] = j;
                 next_sum_d = sum_d;
             }
+
+            // 元に戻す
+            tmp = route[i];
+            route[i] = route[j];
+            route[j] = tmp;
         }
     }
 
