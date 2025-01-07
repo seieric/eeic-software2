@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+// 実行した環境
+// Windows 11のWSL2上のUbuntu 24.04.1 LTS
+// (Linux xxxxx 5.15.167.4-microsoft-standard-WSL2 #1 SMP Tue Nov 5 00:21:55 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux)
+
 int main(void) {
     float f[4];
 
