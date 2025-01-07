@@ -1,7 +1,7 @@
+#include "item.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "item.h"
 
 // 以下は構造体定義
 
@@ -61,3 +61,46 @@ size_t get_nitem(const Itemset *list) { return list->number; }
 double get_itemweight(const Item *item) { return item->weight; }
 
 double get_itemvalue(const Item *item) { return item->value; }
+
+Itemset *load_itemset(char *filename) {
+    FILE *fp;
+    if ((fp = fopen(filename, "rb")) == NULL) {
+        fprintf(stderr, "error: unable to open data file\n");
+        exit(1);
+    }
+
+    double nitem;
+    if (fread(&nitem, sizeof(double), 1, fp) != 1) {
+        fprintf(stderr, "error: unable to read number of items from file\n");
+        exit(1);
+    }
+
+    double *values = (double *)malloc(sizeof(double) * nitem);
+    if (fread(values, sizeof(double), nitem, fp) != nitem) {
+        free(values);
+        fprintf(stderr, "error: unable to read item values from file\n");
+        exit(1);
+    }
+
+    double *weights = (double *)malloc(sizeof(double) * nitem);
+    if (fread(values, sizeof(double), nitem, fp) != nitem) {
+        free(weights);
+        fprintf(stderr, "error: unable to read item weights from file\n");
+    }
+
+    Itemset *list = (Itemset *)malloc(sizeof(Itemset));
+    Item *item = (Item *)malloc(sizeof(Item) * nitem);
+
+    for (int i = 0; i < nitem; ++i) {
+        item[i] = (Item){.value = values[i], .weight = weights[i]};
+    }
+
+    list->number = nitem;
+    list->item = item;
+
+    free(values);
+    free(weights);
+    fclose(fp);
+
+    return list;
+}
