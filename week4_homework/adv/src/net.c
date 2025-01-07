@@ -16,6 +16,10 @@ int train(const double lr, const double alpha, const int max_epoch, Mat *w3x4,
           Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size, Sample **samples) {
     int epoch = 0;
     Mat *input4x1 = mat_create(4, 1);
+
+    printf("\n----------\n");
+    printf("training:\n");
+
     while (++epoch < max_epoch) {
         // 各エポックの処理
         double epoch_loss = 0;
@@ -116,8 +120,11 @@ void eval(Mat *w3x4, Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size,
     Mat *input4x1 = mat_create(4, 1);
     const int data_end = data_size + data_index;
 
-    printf("|Age|Gender|Score |Grade |Status|Prediction|\n");
-    printf("|---|------|------|------|------|----------|\n");
+    printf("\n----------\n");
+
+    printf("evaluation (normalized data):\n");
+    printf("|Age    |Gender|Score  |Grade  |Status|Prediction|\n");
+    printf("|-------|------|-------|-------|------|----------|\n");
 
     // 混同行列用の配列
     // TP, FP, FN, TN
@@ -162,11 +169,11 @@ void eval(Mat *w3x4, Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size,
             }
         }
 
-        printf("|%3.0lf|%6.0lf|%6.2lf|%6.2lf|%6.0lf|%10.4f|\n", samples[i]->age,
+        printf("|%7.4lf|%6.0lf|%7.4lf|%7.4lf|%6.0lf|%10.4f|\n", samples[i]->age,
                samples[i]->gender, samples[i]->score, samples[i]->grade,
                samples[i]->status, out);
     }
-    printf("|---|------|------|------|------|----------|\n");
+    printf("|-------|------|-------|-------|------|----------|\n");
 
     printf("confusion matrix:\n");
     printf("|TP:%d|FP:%d|\n", confusion_array[0], confusion_array[1]);
