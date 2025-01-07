@@ -28,28 +28,16 @@ double solve(const City *city, int n, int *route, int *visited) {
         }
 
         // ランダムに並べ替える
-        // 1と2の町は必ず1を先に2を後に回る
-        int fixed_order_index[2] = {1, 2};
         for (int i = 0; i < n; ++i) {
             const int a = rand() % (n - 1) + 1;
             const int b = rand() % (n - 1) + 1;
             const int tmp = route[a];
             route[a] = route[b];
             route[b] = tmp;
-            if (route[a] == 1) {
-                fixed_order_index[0] = a;
-            } else if (route[a] == 2) {
-                fixed_order_index[1] = a;
-            }
-            if (route[b] == 1) {
-                fixed_order_index[0] = b;
-            } else if (route[b] == 2) {
-                fixed_order_index[1] = b;
-            }
         }
 
         // 局所解を探索
-        double sum_d = search(city, n, route, fixed_order_index);
+        double sum_d = search(city, n, route, visited);
         printf("a_id = %d: sum_d = %f\n", a_id, sum_d);
         if (sum_d < best_sum_d) {
             best_sum_d = sum_d;
@@ -63,14 +51,14 @@ double solve(const City *city, int n, int *route, int *visited) {
     return best_sum_d;
 }
 
-double search(const City *city, int n, int *route, int fixed_order_index[2]) {
+double search(const City *city, int n, int *route, int *visited) {
     double next_sum_d = INFINITY;
     int next[2] = {0, 0};
     for (int i = 1; i < n - 1; ++i) {
         for (int j = i + 1; j < n; ++j) {
             // 逆向きの解を阻止するため2つの町の登場順を固定する
-            if (i == fixed_order_index[0] && j >= fixed_order_index[1]) break;
-            if (j == fixed_order_index[1] && i <= fixed_order_index[0]) break;
+            if (i == 1 && j >= 2) break;
+            if (j == 2 && i <= 1) continue;
             int tmp = route[i];
             route[i] = route[j];
             route[j] = tmp;
@@ -108,7 +96,7 @@ double search(const City *city, int n, int *route, int fixed_order_index[2]) {
         int tmp = route[next[0]];
         route[next[0]] = route[next[1]];
         route[next[1]] = tmp;
-        return search(city, n, route, fixed_order_index);
+        return search(city, n, route, visited);
     }
 
     return best_sum_d;
