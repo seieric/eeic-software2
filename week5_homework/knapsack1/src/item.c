@@ -83,7 +83,7 @@ Itemset *load_itemset(char *filename) {
     }
 
     double *weights = (double *)malloc(sizeof(double) * nitem);
-    if (fread(values, sizeof(double), nitem, fp) != nitem) {
+    if (fread(weights, sizeof(double), nitem, fp) != nitem) {
         free(weights);
         fprintf(stderr, "error: unable to read item weights from file\n");
     }
@@ -126,7 +126,7 @@ void save_itemset(char *filename) {
 
     fwrite(&nitem, sizeof(size_t), 1, fp);
     fwrite(values, sizeof(double), nitem, fp);
-    fwrite(values, sizeof(double), nitem, fp);
+    fwrite(weights, sizeof(double), nitem, fp);
 
     free_itemset(items);
 }
