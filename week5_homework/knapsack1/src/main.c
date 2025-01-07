@@ -35,11 +35,18 @@ int main(int argc, char **argv) {
     print_itemset(items);
 
     // ソルバーで解く
-    double total = solve(items, W);
+    Answer ans = solve(items, W);
 
     // 表示する
     printf("----\nbest solution:\n");
-    printf("value: %4.1f\n", total);
+    printf("value: %4.1f\n", ans.value);
+    printf("weight: %4.1f\n", ans.weight);
+    for (int i = 0; i < get_nitem(items); i++) {
+        printf("%d", ans.flags[i]);
+    }
+    printf("\n");
+
+    free(ans.flags);
 
     free_itemset(items);
     return 0;
