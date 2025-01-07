@@ -112,7 +112,7 @@ void save_itemset(char *filename) {
         exit(1);
     }
 
-    const size_t nitem = 100;
+    const size_t nitem = 10;
     Itemset *items = init_itemset(nitem, 1234);
 
     double *values = (double *)malloc(sizeof(double) * nitem);
