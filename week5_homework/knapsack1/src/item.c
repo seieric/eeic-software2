@@ -104,3 +104,29 @@ Itemset *load_itemset(char *filename) {
 
     return list;
 }
+
+void save_itemset(char *filename) {
+    FILE *fp;
+    if ((fp = fopen(filename, "wb")) == NULL) {
+        fprintf(stderr, "error: unable to open target file to save\n");
+        exit(1);
+    }
+
+    const size_t nitem = 100;
+    Itemset *items = init_itemset(nitem, 1234);
+
+    double *values = (double *)malloc(sizeof(double) * nitem);
+    double *weights = (double *)malloc(sizeof(double) * nitem);
+
+    for (int i = 0; i < nitem; ++i) {
+        Item *item = get_item(items, i);
+        values[i] = item->value;
+        weights[i] = item->weight;
+    }
+
+    fwrite(&nitem, sizeof(size_t), 1, fp);
+    fwrite(values, sizeof(double), nitem, fp);
+    fwrite(values, sizeof(double), nitem, fp);
+
+    free_itemset(items);
+}
