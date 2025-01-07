@@ -27,9 +27,9 @@ double get_itemweight(const Item *item);
 // Item の Valueを取得
 double get_itemvalue(const Item *item);
 
-//ファイルからItemsetを設定 [未実装, 課題1] 
+//ファイルからItemsetを設定 [実装済み, 課題1] 
 Itemset *load_itemset(char *filename);
 
-//Itemsetのパラメータを記録したバイナリファイルを出力する関数 [未実装, テスト用]
+//Itemsetのパラメータを記録したバイナリファイルを出力する関数 [実装済み, テスト用]
 void save_itemset(char *filename);
 
