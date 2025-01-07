@@ -5,8 +5,9 @@
 #include "matrix.h"
 #include "net.h"
 
-#define SEED 1234
-#define LEARNING_RATE 0.0001
+#define SEED 20250107
+#define MAX_EPOCH 2000
+#define LEARNING_RATE 0.0005
 #define TEST_DATA_SIZE 20  // テスト用データの件数（学習には使わない）
 
 int main(int argc, char *argv[]) {
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
     printf("learning rate: %lf\n", lr);
 
     // モデルのトレーニング（重みの最適化）
-    int last_epoch = train(lr, 0.59, 0, w3x4, w1x3, b3x1, b1x1,
+    int last_epoch = train(lr, 0.1, MAX_EPOCH, w3x4, w1x3, b3x1, b1x1,
                            data_size - TEST_DATA_SIZE, samples);
 
     printf("last epoch: %d\n", last_epoch);

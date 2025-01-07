@@ -9,14 +9,13 @@
 #include "data.h"
 #include "matrix.h"
 
-#define MAX_EPOCH 2000
 #define SAMPLE_SIZE 20
 
-int train(const double lr, const double alpha, const int dim, Mat *w3x4,
+int train(const double lr, const double alpha, const int max_epoch, Mat *w3x4,
           Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size, Sample **samples) {
     int epoch = 0;
     Mat *input4x1 = mat_create(4, 1);
-    while (++epoch < MAX_EPOCH) {
+    while (++epoch < max_epoch) {
         // 各エポックの処理
         double epoch_loss = 0;
         // SGDを利用するのでデータをシャッフル
