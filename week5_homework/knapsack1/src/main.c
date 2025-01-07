@@ -22,9 +22,7 @@ int main(int argc, char **argv) {
 
     Itemset *items;
 
-    if (1) {
-        items = load_itemset(argv[1]);
-    } else {
+    if (is_int(argv[1])) {
         // 個数の上限はあらかじめ定めておく
         const int max_items = 100;
 
@@ -35,6 +33,8 @@ int main(int argc, char **argv) {
         // 乱数シードを1にして、初期化 (ここは変更可能)
         int seed = 1;
         items = init_itemset(n, seed);
+    } else {
+        items = load_itemset(argv[1]);
     }
 
     const double W = load_double(argv[2]);

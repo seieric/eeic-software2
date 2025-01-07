@@ -1,6 +1,8 @@
 #include "util.h"
 
+#include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,4 +39,17 @@ double load_double(const char *argvalue) {
         exit(1);
     }
     return ret;
+}
+
+bool is_int(char *str) {
+    int i = 0;
+    if (str[i] == '-') {
+        i = 1;
+    }
+
+    while (str[i]) {
+        if (!isdigit(str[i])) return false;
+        ++i;
+    }
+    return true;
 }
