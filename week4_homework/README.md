@@ -24,6 +24,7 @@
 - 実行方法
   - `make`でコンパイルし、`bin/nn data/student_admission_record_dirty.csv`で実行する。
   - 冒頭にデータの中身、初期状態の重みが表示され、その後、各エポックでの損失、学習された重み、テストデータに対する推論結果が表示される。
+  - 学習率やエポック数等はコード内のマクロ定数で設定している。
 - ニューラルネットワークの構造
   - 入力層：4ノード
   - 中間層：3ノード
@@ -55,9 +56,28 @@
   - 行列積および行列への活性化関数の適用。
 - 逆伝播の実装
   - 誤差逆伝播法を用いて、勾配を計算し、最急降下法によって重みを更新する。
+  - ただし、各エポックでデータをシャッフルして、最初の50個のみを利用することで、確率的勾配降下法のような挙動にしている。
 - データの前処理
   - 性別、試験の点数、高校の成績の3つの項目はネットワークに入力される前に標準化される。
   - テストデータも含めて全てのデータの平均と標準偏差を用いて標準化を行っている。
+
+#### 結果
+
+- テストデータに対する正解率：60%
+- 学習データに対する正解率：71.1%
+- 混同行列
+  - True Positive（正解：合格・推論：合格）: 8
+  - False Positive（正解：不合格・推論：合格）: 5
+  - True Negative（正解：不合格・推論：不合格）: 7
+  - False Negative（正解：合格・推論：不合格）: 5
+- 適合率：61.5%
+- 再現率：61.5%
+- 真陽性率：61.5%
+- 真陰性率：58.3%
+
+#### 考察
+
+学習データに過剰にフィッティングしすぎているように思われるが、ニューラルネットワークとしては機能していると考えられる。もう少し高い精度を出せると考えていたが、データの数が少ないことや明らかな規則性がないデータであったため、この程度の精度になったと考えられる。
 
 ## 参考にしたサイト
 
@@ -70,6 +90,9 @@
 - https://qiita.com/yosshi4486/items/d111272edeba0984cef2
 - https://toukei-lab.com/relu
 - https://nisshingeppo.com/ai/relu-funcrion/
+- https://qiita.com/kwi0303/items/7bfd7180f80a52296e64
 - https://www.gavo.t.u-tokyo.ac.jp/~dsk_saito/lecture/software2/resource/lecture2.html#section-8
 - https://qiita.com/Fumio-eisan/items/d697fbd96347ef7e49d5
 - https://qiita.com/yShig/items/dbeb98598abcc98e1a57
+- https://qiita.com/TsutomuNakamura/items/a1a6a02cb9bb0dcbb37f
+- https://qiita.com/lilacs/items/703314640ac790e4a6c5
