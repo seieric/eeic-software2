@@ -22,7 +22,8 @@ Answer search(int index, const Itemset *list, double capacity,
               unsigned char *flags, double sum_v, double sum_w) {
     size_t max_index = get_nitem(list);
     assert(index >= 0 && sum_v >= 0 && sum_w >= 0);
-    const Answer invalid = (Answer){.value = 0, .flags = NULL};  // 解なしを定義
+    const Answer invalid =
+        (Answer){.value = 0, .weight = 0, .flags = NULL};  // 解なしを定義
 
     // 必ず再帰の停止条件を明記する (最初が望ましい)
     if (index == max_index) {
