@@ -10,6 +10,7 @@
 #include "matrix.h"
 
 #define SAMPLE_SIZE 20
+#define LOG_INTERVAL 100
 
 int train(const double lr, const double alpha, const int max_epoch, Mat *w3x4,
           Mat *w1x3, Mat *b3x1, Mat *b1x1, int data_size, Sample **samples) {
@@ -61,7 +62,8 @@ int train(const double lr, const double alpha, const int max_epoch, Mat *w3x4,
             Mat *tmp3x4 = mat_mul(w_dot_relu3x1, input1x4);
 
             // 最急降下法で更新
-            Mat *bdiff1x1 = mat_times_x(cse_grad1x1, coef * lr);
+            Mat *bdiff1x1 = mat_create(1, 1);
+            mat_array_init(bdiff1x1, (double[]){coef * lr});
             mat_minus_inplace(b1x1, bdiff1x1);
             Mat *bdiff3x1 = mat_times_x(w_dot_relu3x1, coef * lr);
             mat_minus_inplace(b3x1, bdiff3x1);
@@ -88,8 +90,13 @@ int train(const double lr, const double alpha, const int max_epoch, Mat *w3x4,
             mat_destroy(diff1x3);
             mat_destroy(diff3x4);
         }
-        printf("epoch: %d, loss: %lf\n", epoch, epoch_loss / data_size);
-        if (epoch_loss / data_size < alpha) break;
+        if (epoch % LOG_INTERVAL == 0 || (epoch_loss / data_size) < alpha) {
+            printf("epoch: %d, loss: %lf\n", epoch, epoch_loss / data_size);
+            if (epoch_loss / data_size < alpha) {
+                printf("loss < alpha: stop training.\n");
+                break;
+            }
+        }
     }
 
     // 最終エポックの評価
