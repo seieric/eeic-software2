@@ -69,8 +69,8 @@ Itemset *load_itemset(char *filename) {
         exit(1);
     }
 
-    double nitem;
-    if (fread(&nitem, sizeof(double), 1, fp) != 1) {
+    size_t nitem;
+    if (fread(&nitem, sizeof(size_t), 1, fp) != 1) {
         fprintf(stderr, "error: unable to read number of items from file\n");
         exit(1);
     }
