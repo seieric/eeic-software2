@@ -12,8 +12,8 @@
 #define TEST_DATA_SIZE 30  // テスト用データの件数（学習には使わない）
 
 int main(int argc, char *argv[]) {
-    if (argc != 2 && argc != 3) {
-        printf("usage: %s <csv file> <alpha>\n", argv[0]);
+    if (argc != 2) {
+        printf("usage: %s <csv file>\n", argv[0]);
         return 1;
     }
 
