@@ -46,8 +46,7 @@ Mat *mat_dot(Mat *a, Mat *b) {
         for (int i = 0; i < n; ++i) {
             const int r = i / a->height;
             const int c = i % a->height;
-            mat->array[i] =
-                a->array[i] * b->array[c * b->width + r];
+            mat->array[i] = a->array[i] * b->array[c * b->width + r];
         }
         return mat;
     }
@@ -156,7 +155,7 @@ Mat *mat_transpose(Mat *a) {
     for (int i = 0; i < n; ++i) {
         const int r = i / a->height;
         const int c = i % a->height;
-        mat->array[c * a->width + r] = a->array[i];
+        mat->array[i] = a->array[c * a->width + r];
     }
     return mat;
 }
