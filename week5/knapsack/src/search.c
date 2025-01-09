@@ -47,6 +47,7 @@ double search(int index, const Itemset *list, double capacity, unsigned char *fl
     Item *item = get_item(list, index);
     sum_v += get_itemvalue(item);
     sum_w += get_itemweight(item);
+    if (sum_w > capacity) return v0;
     const double v1 = search(index + 1, list, capacity, flags, sum_v, sum_w);
 
     // 使った場合の結果と使わなかった場合の結果を比較して返す
