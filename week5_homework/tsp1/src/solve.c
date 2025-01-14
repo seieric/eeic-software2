@@ -9,7 +9,7 @@
 #include "map.h"
 
 // ランダムに生成する初期解の個数
-#define NUM_INIT_ANS 5
+#define NUM_INIT_ANS 50
 
 double solve(const City *city, int n, int *route) {
     // 複数の初期解に対して探索を行う
