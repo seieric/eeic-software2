@@ -9,22 +9,17 @@
 #include "map.h"
 
 // ランダムに生成する初期解の個数
-#define NUM_INIT_ANS 3
+#define NUM_INIT_ANS 5
 
-double solve(const City *city, int n, int *route, int *visited) {
+double solve(const City *city, int n, int *route) {
     // 複数の初期解に対して探索を行う
     double best_sum_d = INFINITY;
     // 解の保存場所
     int *final_route = (int *)malloc(sizeof(int) * n);
     for (int a_id = 0; a_id < NUM_INIT_ANS; ++a_id) {
-        // 以下はとりあえずダミー。ここに探索プログラムを実装する
-        // 現状は町の番号順のルートを回っているだけ
-        // 実際は再帰的に探索して、組み合わせが膨大になる。
         route[0] = 0;  // 循環した結果を避けるため、常に0番目からスタート
-        visited[0] = 1;
         for (int i = 0; i < n; i++) {
             route[i] = i;
-            visited[i] = 1;  // 訪問済みかチェック
         }
 
         // ランダムに並べ替える
@@ -37,8 +32,8 @@ double solve(const City *city, int n, int *route, int *visited) {
         }
 
         // 局所解を探索
-        double sum_d = search(city, n, route, visited);
-        printf("a_id = %d: sum_d = %f\n", a_id, sum_d);
+        double sum_d = search(city, n, route);
+        printf("trial #%02d: total distance = %f\n", a_id, sum_d);
         if (sum_d < best_sum_d) {
             best_sum_d = sum_d;
             memcpy(final_route, route, sizeof(int) * n);
@@ -51,7 +46,7 @@ double solve(const City *city, int n, int *route, int *visited) {
     return best_sum_d;
 }
 
-double search(const City *city, int n, int *route, int *visited) {
+double search(const City *city, int n, int *route) {
     double next_sum_d = INFINITY;
     int next[2] = {0, 0};
     for (int i = 1; i < n - 1; ++i) {
@@ -84,7 +79,6 @@ double search(const City *city, int n, int *route, int *visited) {
     }
 
     // トータルの巡回距離を計算する
-    // 実際には再帰の末尾で計算することになる
     double best_sum_d = 0;
     for (int i = 0; i < n; i++) {
         const int c0 = route[i];
@@ -96,7 +90,7 @@ double search(const City *city, int n, int *route, int *visited) {
         int tmp = route[next[0]];
         route[next[0]] = route[next[1]];
         route[next[1]] = tmp;
-        return search(city, n, route, visited);
+        return search(city, n, route);
     }
 
     return best_sum_d;
