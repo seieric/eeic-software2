@@ -47,13 +47,16 @@ double solve(const City *city, int n, int *route) {
 }
 
 double search(const City *city, int n, int *route) {
+    // 近傍にある解の最小距離
     double next_sum_d = INFINITY;
     int next[2] = {0, 0};
+    // 近傍を探索（ここでは2箇所入れ替えたもの）
     for (int i = 1; i < n - 1; ++i) {
         for (int j = i + 1; j < n; ++j) {
             // 逆向きの解を阻止するため2つの町の登場順を固定する
             if (i == 1 && j >= 2) break;
             if (j == 2 && i <= 1) continue;
+            // 2箇所入れ替えてみる
             int tmp = route[i];
             route[i] = route[j];
             route[j] = tmp;
@@ -78,7 +81,7 @@ double search(const City *city, int n, int *route) {
         }
     }
 
-    // トータルの巡回距離を計算する
+    // もともと与えられた解のトータルの巡回距離を計算する
     double best_sum_d = 0;
     for (int i = 0; i < n; i++) {
         const int c0 = route[i];
@@ -86,6 +89,7 @@ double search(const City *city, int n, int *route) {
         best_sum_d += distance(get_city(city, c0), get_city(city, c1));
     }
 
+    // もともと与えられた解より近傍で見つけた解のほうが良い場合はさらに探索する
     if (next_sum_d < best_sum_d) {
         int tmp = route[next[0]];
         route[next[0]] = route[next[1]];
