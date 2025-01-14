@@ -3,7 +3,6 @@
 #include <assert.h> // for assert()
 #include <unistd.h> // for sleep()
 #include <string.h> // for memset()
-#include <time.h>   // for time()
 #include "city.h"
 #include "map.h"
 #include "solve.h"
@@ -21,8 +20,6 @@ int main(int argc, char**argv)
         fprintf(stderr, "Usage: %s <city file>\n", argv[0]);
         exit(1);
     }
-
-    srand((unsigned int)time(NULL));
 
     int n = 1;
     City *city = load_cities(argv[1],&n);
