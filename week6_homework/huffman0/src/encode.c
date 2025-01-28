@@ -44,9 +44,9 @@ static void count_symbols(const char *filename)
     }
 
     // 1Byteずつ読み込み、カウントする
-    unsigned char buf;
-    while (fread(&buf, sizeof(unsigned char), 1, fp) != 0) {
-        symbol_count[buf] += 1;
+    int buf;
+    while ((buf = fgetc(fp)) != EOF) {
+        symbol_count[buf]++;
     }
 
     fclose(fp);
@@ -105,7 +105,6 @@ static Node *build_tree(void)
         
         // Create a new node
         // 選ばれた2つのノードを元に統合ノードを新規作成
-        // 作成したノードはnodep にどうすればよいか?
         int dummy_count = node1->count + node2->count;
         nodep[n++] = create_node(dummy, dummy_count, node1, node2);
     }
