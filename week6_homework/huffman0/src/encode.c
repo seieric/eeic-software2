@@ -117,28 +117,28 @@ void traverse_tree(const int depth, const Node *np) {
     static unsigned int huffman = 0;
     if (np == NULL) return;
 
+    // 自身の情報を表示
     if (depth == 0) {
         printf(".");
-    }
-
-    // 自身の情報を表示
-    printf("[");
-    if (np->symbol == -1) {
-        printf("-1");
+    } else if (np->symbol == -1) {
+        printf("─┐");
     } else if (np->symbol == '\n') {
-        printf("\\n");
+        printf("[\\n]");
     } else {
-        printf("%c", np->symbol);
+        printf("[%c]", np->symbol);
     }
-    printf("] ");
-    for (int i = 0; i < depth; ++i) {
-        if (huffman & 1 << i) {
-            printf("1");
-        } else {
-            printf("0");
+    printf(" ");
+    if (np->symbol != -1) {
+        for (int i = 0; i < depth; ++i) {
+            if (huffman & 1 << i) {
+                printf("1");
+            } else {
+                printf("0");
+            }
         }
+        printf(" ");
     }
-    printf(" (cnt. %d)\n", np->count);
+    printf("(cnt. %d)\n", np->count);
 
     // 左の子
     if (np->left) {
